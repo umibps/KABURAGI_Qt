@@ -31,6 +31,12 @@
 extern "C" {
 #endif
 
+#ifdef _DEBUG
+# define ASSERT(expression) assert(expression)
+#else
+# define ASSERT(expression)
+#endif
+
 static ght_uint32_t crc32_table[256] =
 {
   0x00000000,0x04c11db7,0x09823b6e,0x0d4326d9,0x130476dc,0x17c56b6b,0x1a864db2,0x1e475005,
@@ -78,7 +84,7 @@ ght_uint32_t ght_one_at_a_time_hash(ght_hash_key_t *p_key)
   ght_uint32_t i_hash=0;
   int i;
 
-  assert(p_key);
+  ASSERT(p_key);
 
   for (i=0; i<(int)p_key->i_size; ++i)
 	{
@@ -102,7 +108,7 @@ ght_uint32_t ght_crc_hash(ght_hash_key_t *p_key)
   unsigned char *p, *p_end;
   ght_uint32_t  crc;
 
-  assert(p_key);
+  ASSERT(p_key);
 
   crc = 0xffffffff;	   /* preload shift register, per CRC-32 spec */
   p = (unsigned char *)p_key->p_key;
@@ -118,7 +124,7 @@ ght_uint32_t ght_rotating_hash(ght_hash_key_t *p_key)
   ght_uint32_t i_hash=0;
   int i;
 
-  assert(p_key);
+  ASSERT(p_key);
 
   for (i=0; i<(int)p_key->i_size; ++i)
 	{

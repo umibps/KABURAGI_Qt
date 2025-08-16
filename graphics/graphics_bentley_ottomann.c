@@ -1193,7 +1193,7 @@ static INLINE void GraphicsBoEdgeStartOrContinueTrap(
 	if (left->deferred_trap.right == right)
 		return;
 
-	assert (right);
+	ASSERT(right);
 	if (left->deferred_trap.right != NULL) {
 		if (edges_colinear (left->deferred_trap.right, right))
 		{
@@ -1658,7 +1658,7 @@ edges_have_an_intersection_quadratic (GRAPHICS_BO_EDGE	*edges,
 
 	/* We must not be given any upside-down edges. */
 	for (i = 0; i < num_edges; i++) {
-		assert (GraphicsBoPoint32Compare (&edges[i].top, &edges[i].bottom) < 0);
+		ASSERT(GraphicsBoPoint32Compare (&edges[i].top, &edges[i].bottom) < 0);
 		edges[i].line.p1.x <<= CAIRO_BO_GUARD_BITS;
 		edges[i].line.p1.y <<= CAIRO_BO_GUARD_BITS;
 		edges[i].line.p2.x <<= CAIRO_BO_GUARD_BITS;
@@ -1874,7 +1874,7 @@ run_test (const char		*test_name,
 		int num_edges = _cairo_array_num_elements (&intersected_edges);
 		passes++;
 		edges = _cairo_malloc_ab (num_edges, sizeof (GRAPHICS_BO_EDGE));
-		assert (edges != NULL);
+		ASSERT(edges != NULL);
 		memcpy (edges, _cairo_array_index (&intersected_edges, 0), num_edges * sizeof (GRAPHICS_BO_EDGE));
 		_cairo_array_fini (&intersected_edges);
 		_cairo_array_init (&intersected_edges, sizeof (GRAPHICS_BO_EDGE));

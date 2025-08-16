@@ -18,7 +18,7 @@ void RGBpixels_to_RGBApixels(uint8* original, uint8* result, int width, int heig
 
 	for(y=0; y<height; y++)
 	{
-		for(x = 0, src = &original[y * stride], dst = &result[y * dst_stride]; x < width; src += 3, dst += 4)
+		for(x = 0, src = &original[y * stride], dst = &result[y * dst_stride]; x < width; src += 3, dst += 4, x++)
 		{
 			dst[0] = src[0];
 			dst[1] = src[1];
@@ -36,7 +36,7 @@ void GrapyPixels_to_RGBApixels(uint8* original, uint8* result, int width, int he
 
 	for(y = 0; y < height; y++)
 	{
-		for(x = 0, src = &original[y * stride], dst = &result[y * dst_stride]; x < width; src ++, dst += 4)
+		for(x = 0, src = &original[y * stride], dst = &result[y * dst_stride]; x < width; src ++, dst += 4, x++)
 		{
 			dst[0] = src[0];
 			dst[1] = src[0];
@@ -128,6 +128,7 @@ DRAW_WINDOW* ReadImageFile(APPLICATION* app, char* file_path)
 		int32 width, height, stride;
 		uint8 *pixels;
 		int channel;
+		int i;
 
 		pixels = ReadPNGStream((void*)fp, (stream_func_t)fread, &width, &height, &stride);
 		channel = stride / width;
@@ -144,9 +145,14 @@ DRAW_WINDOW* ReadImageFile(APPLICATION* app, char* file_path)
 			pixels = (uint8*)MEM_ALLOC_FUNC(width * 4 * height);
 			RGBpixels_to_RGBApixels(old_pixels, pixels, width, height, stride);
 			MEM_FREE_FUNC(old_pixels);
+			stride = width * 4;
 		}
 		canvas = CreateDrawWindow(width, height, 4, file_path, app->widgets, app->window_num, app);
-		(void)memcpy(canvas->layer->pixels, pixels, canvas->pixel_buf_size);
+		for(i=0; i<height; i++)
+		{
+			(void)memcpy(&canvas->layer->pixels[i*canvas->layer->stride],
+							&pixels[i*stride], stride);
+		}
 		MEM_FREE_FUNC(pixels);
 	}
 

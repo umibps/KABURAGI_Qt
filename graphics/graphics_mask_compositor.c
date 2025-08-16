@@ -610,7 +610,7 @@ static eGRAPHICS_STATUS fixup_unbounded_boxes(
 	GRAPHICS_BOXES_CHUNK *chunk;
 	int i;
 
-	assert (boxes->is_pixel_aligned);
+	ASSERT(boxes->is_pixel_aligned);
 
 	graphics = (GRAPHICS*)compositor->base.graphics;
 
@@ -639,7 +639,7 @@ static eGRAPHICS_STATUS fixup_unbounded_boxes(
 		InitializeGraphicsBoxes(&tmp);
 
 		status = GraphicsBoxesAdd(&tmp, GRAPHICS_ANTIALIAS_DEFAULT, &box);
-		assert (status == GRAPHICS_STATUS_SUCCESS);
+		ASSERT(status == GRAPHICS_STATUS_SUCCESS);
 
 		tmp.chunks.next = &boxes->chunks;
 		tmp.num_boxes += boxes->num_boxes;
@@ -658,7 +658,7 @@ static eGRAPHICS_STATUS fixup_unbounded_boxes(
 		GraphicsBoxesLimit(&clear, (GRAPHICS_BOX *) pbox, i);
 
 		status = GraphicsBoxesAdd(&clear, GRAPHICS_ANTIALIAS_DEFAULT, &box);
-		assert (status == GRAPHICS_STATUS_SUCCESS);
+		ASSERT(status == GRAPHICS_STATUS_SUCCESS);
 
 		for (chunk = &boxes->chunks; chunk != NULL; chunk = chunk->next) {
 			for (i = 0; i < chunk->count; i++) {
@@ -1057,7 +1057,7 @@ static eGRAPHICS_INTEGER_STATUS composite_opacity_boxes(
 	struct composite_opacity_info info;
 	int i;
 
-	assert (clip);
+	ASSERT(clip);
 
 	info.compositor = compositor;
 	info.op = op;
@@ -1153,8 +1153,8 @@ composite_mask_clip_boxes (const GRAPHICS_MASK_COMPOSITOR *compositor,
 	struct composite_box_info info;
 	int i;
 
-	assert (src_pattern == NULL);
-	assert (op == GRAPHICS_OPERATOR_SOURCE);
+	ASSERT(src_pattern == NULL);
+	ASSERT(op == GRAPHICS_OPERATOR_SOURCE);
 
 	info.compositor = compositor;
 	info.op = GRAPHICS_OPERATOR_SOURCE;

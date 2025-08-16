@@ -285,7 +285,7 @@ int MouseMotionNotifyEvent(
 		+ (y0 - canvas->half_size) * canvas->cos_value + canvas->add_cursor_y;
 	x = rev_zoom * canvas->cursor_x;
 	y = rev_zoom * canvas->cursor_y;
-printf("pressure : %lf\n", event_state->pressure);
+
 	// 左右反転表示中ならばX座標を修正
 	if((canvas->flags & DRAW_WINDOW_DISPLAY_HORIZON_REVERSE) != 0)
 	{

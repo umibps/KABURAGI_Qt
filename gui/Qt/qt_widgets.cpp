@@ -254,7 +254,7 @@ char* GetImageFileSaveaPath(APPLICATION* app)
 	{
 		return NULL;
 	}
-	char *path = MEM_STRDUP_FUNC(file_path.toUtf8().data());
+	char *path = MEM_STRDUP_FUNC(file_path.toLocal8Bit().data());
 
 	return path;
 }
@@ -272,10 +272,26 @@ char* GetImageFileOpenPath(APPLICATION* app)
 	{
 		return NULL;
 	}
-	char* path = MEM_STRDUP_FUNC(file_path.toUtf8().data());
+	char* path = MEM_STRDUP_FUNC(file_path.toLocal8Bit().data());
 
 	return path;
 }
+
+#ifdef _DEBUG
+void PrintQobjectProperties(QObject* object)
+{
+	const QMetaObject *meta_object = object->metaObject();
+	for(int i=0; i<meta_object->propertyCount(); i++)
+	{
+		QMetaProperty meta_porperty = meta_object->property(i);
+		const char *name = meta_porperty.name();
+		QVariant value = object->property(name);
+		printf("property_name:%s\tvalue:%s\n", name, value.typeName());
+	}
+}
+#else
+void PrintQobjectProperties(QObject* object) {}
+#endif
 
 #ifdef __cplusplus
 }

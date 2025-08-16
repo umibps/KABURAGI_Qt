@@ -209,32 +209,40 @@ void ToolBoxWidget::createAdjustmentLayerTable(void)
 
 void ToolBoxWidget::allCommonToolButtonUnchecked(void)
 {
+	// ボタングループの排他設定を解除しないと常にどれかがhチェック状態になる為
+		// 処理中のみ排他設定を変更する
+	common_tool_table_group.setExclusive(false);
 	for(int y = 0; y < COMMON_TOOL_TABLE_HEIGHT; y++)
 	{
 		for(int x = 0; x < COMMON_TOOL_TABLE_WIDTH; x++)
 		{
 			if(common_tool_buttons[y][x] != NULL)
 			{
-				common_tool_buttons[y][x]->setDown(false);
+				common_tool_buttons[y][x]->setChecked(false);
 				common_tool_buttons[y][x]->update();
 			}
 		}
 	}
+	common_tool_table_group.setExclusive(true);
 }
 
 void ToolBoxWidget::allBrushButtonUnchecked(void)
 {
+	// ボタングループの排他設定を解除しないと常にどれかがhチェック状態になる為
+		// 処理中のみ排他設定を変更する
+	brush_table_group.setExclusive(false);
 	for(int y = 0; y < BRUSH_TABLE_HEIGHT; y++)
 	{
 		for(int x = 0; x < BRUSH_TABLE_WIDTH; x++)
 		{
 			if(brush_buttons[y][x] != NULL)
 			{
-				brush_buttons[y][x]->setDown(false);
+				brush_buttons[y][x]->setChecked(false);
 				brush_buttons[y][x]->update();
 			}
 		}
 	}
+	brush_table_group.setExclusive(true);
 }
 
 #if defined(USE_3D_LAYER) && USE_3D_LAYER != 0

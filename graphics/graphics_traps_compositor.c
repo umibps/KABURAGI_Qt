@@ -143,7 +143,7 @@ static void add_rect_with_offset(GRAPHICS_BOXES* boxes, int x1, int y1, int x2, 
 	box.point2.y = GraphicsFixedFromInteger(y2 - dy);
 
 	status = GraphicsBoxesAdd(boxes, GRAPHICS_ANTIALIAS_DEFAULT, &box);
-	assert (status == GRAPHICS_INTEGER_STATUS_SUCCESS);
+	ASSERT (status == GRAPHICS_INTEGER_STATUS_SUCCESS);
 }
 
 static eGRAPHICS_INTEGER_STATUS combine_clip_as_traps(
@@ -832,7 +832,7 @@ static void add_rect(GRAPHICS_BOXES* boxes, int x1, int y1, int x2, int y2)
 	box.point2.y = GraphicsFixedFromInteger(y2);
 
 	status = GraphicsBoxesAdd(boxes, GRAPHICS_ANTIALIAS_DEFAULT, &box);
-	assert (status == GRAPHICS_INTEGER_STATUS_SUCCESS);
+	ASSERT (status == GRAPHICS_INTEGER_STATUS_SUCCESS);
 }
 
 static eGRAPHICS_STATUS fixup_unbounded(
@@ -857,7 +857,7 @@ static eGRAPHICS_STATUS fixup_unbounded(
 		return GRAPHICS_STATUS_SUCCESS;
 	}
 
-	assert (extents->clip->path == NULL);
+	ASSERT (extents->clip->path == NULL);
 
 	/* subtract the drawn boxes from the unbounded area */
 	InitializeGraphicsBoxes(&clear);
@@ -913,10 +913,10 @@ static eGRAPHICS_STATUS fixup_unbounded(
 	{
 		InitializeGraphicsBoxes(&tmp);
 
-		assert (boxes->is_pixel_aligned);
+		ASSERT (boxes->is_pixel_aligned);
 
 		status = GraphicsBoxesAdd(&tmp, GRAPHICS_ANTIALIAS_DEFAULT, &box);
-		assert (status == GRAPHICS_INTEGER_STATUS_SUCCESS);
+		ASSERT (status == GRAPHICS_INTEGER_STATUS_SUCCESS);
 
 		tmp.chunks.next = &boxes->chunks;
 		tmp.num_boxes += boxes->num_boxes;
@@ -935,7 +935,7 @@ empty:
 		box.point2.x = GraphicsFixedFromInteger(extents->unbounded.x + extents->unbounded.width);
 		
 		status = GraphicsBoxesAdd(&clear, GRAPHICS_ANTIALIAS_DEFAULT, &box);
-		assert (status == GRAPHICS_INTEGER_STATUS_SUCCESS);
+		ASSERT (status == GRAPHICS_INTEGER_STATUS_SUCCESS);
 	}
 
 	/* Now intersect with the clip boxes */
@@ -1637,7 +1637,7 @@ static eGRAPHICS_STATUS clip_and_composite_polygon(
 		status = GraphicsRasterisePolygonToBoxes(polygon, fill_rule, &boxes);
 		if(LIKELY(status == GRAPHICS_INTEGER_STATUS_SUCCESS))
 		{
-			assert (boxes.is_pixel_aligned);
+			ASSERT (boxes.is_pixel_aligned);
 			status = clip_and_composite_boxes (compositor, extents, &boxes);
 		}
 		GraphicsBoxesFinish(&boxes);
@@ -1673,7 +1673,7 @@ static eGRAPHICS_STATUS clip_and_composite_polygon(
 		{
 			status = clip_and_composite_boxes (compositor, extents, &boxes);
 			/* XXX need to reconstruct the traps! */
-			assert (status != GRAPHICS_INTEGER_STATUS_UNSUPPORTED);
+			ASSERT (status != GRAPHICS_INTEGER_STATUS_UNSUPPORTED);
 		}
 	}
 	if(status == GRAPHICS_INTEGER_STATUS_UNSUPPORTED)

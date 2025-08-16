@@ -673,7 +673,7 @@ static INLINE FLOAT_T normalize_slope(FLOAT_T* dx, FLOAT_T* dy)
 	FLOAT_T dx0 = *dx, dy0 = *dy;
 	FLOAT_T mag;
 
-	assert(dx0 != 0.0 || dy0 != 0.0);
+	ASSERT(dx0 != 0.0 || dy0 != 0.0);
 
 	if(dx0 == 0.0)
 	{

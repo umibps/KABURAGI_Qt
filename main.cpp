@@ -4,13 +4,21 @@
 
 #ifdef _MSC_VER
 # pragma comment(lib, "freetype27.lib")
-# pragma comment(lib, "harfbuzz.lib")
-# pragma comment(lib, "harfbuzz-subset.lib")
 # pragma comment(lib, "libpng.lib")
 # pragma comment(lib, "zdll.lib")
-# pragma comment(lib, "Qt6Cored.lib")
-# pragma comment(lib, "Qt6Guid.lib")
-# pragma comment(lib, "Qt6Widgetsd.lib")
+# ifdef _DEBUG
+#  pragma comment(lib, "harfbuzzd.lib")
+#  pragma comment(lib, "harfbuzz-subsetd.lib")
+#  pragma comment(lib, "Qt6Cored.lib")
+#  pragma comment(lib, "Qt6Guid.lib")
+#  pragma comment(lib, "Qt6Widgetsd.lib")
+# else
+#  pragma comment(lib, "harfbuzz.lib")
+#  pragma comment(lib, "harfbuzz-subset.lib")
+#  pragma comment(lib, "Qt6Core.lib")
+#  pragma comment(lib, "Qt6Gui.lib")
+#  pragma comment(lib, "Qt6Widgets.lib")
+# endif
 #endif
 
 int main(int argc, char *argv[])

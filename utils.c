@@ -1138,6 +1138,7 @@ void ToolDummyDisplay(
 	
 }
 
+#ifdef _DEBUG
 #include "graphics/graphics_surface.h"
 #include "image_file/png_file.h"
 
@@ -1159,6 +1160,8 @@ void WriteSurfacePngFile(const char* file_path, void* surface)
 						image_surface->width, image_surface->height, image_surface->stride, 4, 0, 3);
 	(void)fclose(fp);
 }
+
+#endif
 
 #ifdef __cplusplus
 }

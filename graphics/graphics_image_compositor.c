@@ -1501,7 +1501,7 @@ _cairo_image_unbounded_spans (void *abstract_renderer,
 {
 	GRAPHICS_IMAGE_SPAN_RENDERER *r = abstract_renderer;
 
-	assert (y + height <= r->extents.height);
+	ASSERT (y + height <= r->extents.height);
 	if (y > r->extents.y) {
 		pixman_image_compositor_blt (r->compositor,
 			r->extents.x, r->extents.y,
@@ -1524,7 +1524,7 @@ _cairo_image_unbounded_spans (void *abstract_renderer,
 		}
 
 		do {
-			assert (spans[0].x < r->extents.x + r->extents.width);
+			ASSERT(spans[0].x < r->extents.x + r->extents.width);
 			pixman_image_compositor_blt (r->compositor,
 				spans[0].x, y,
 				spans[1].x - spans[0].x, height,
@@ -1533,7 +1533,7 @@ _cairo_image_unbounded_spans (void *abstract_renderer,
 		} while (--num_spans > 1);
 
 		if (spans[0].x != r->extents.x + r->extents.width) {
-			assert (spans[0].x < r->extents.x + r->extents.width);
+			ASSERT(spans[0].x < r->extents.x + r->extents.width);
 			pixman_image_compositor_blt (r->compositor,
 				spans[0].x,	 y,
 				r->extents.x + r->extents.width - spans[0].x, height,
@@ -1553,7 +1553,7 @@ _cairo_image_clipped_spans (void *abstract_renderer,
 {
 	GRAPHICS_IMAGE_SPAN_RENDERER *r = abstract_renderer;
 
-	assert (num_spans);
+	ASSERT(num_spans);
 
 	do {
 		if (! spans[0].inverse)
@@ -3176,7 +3176,7 @@ static eGRAPHICS_INTEGER_STATUS inplace_renderer_init(
 			composite->bounded.x + composite->bounded.width + tx <= src->width &&
 			composite->bounded.y + composite->bounded.height + ty <= src->height) {
 
-			assert(PIXEL_MANIPULATE_BIT_PER_PIXEL(dst->pixel_format) == 32);
+			ASSERT(PIXEL_MANIPULATE_BIT_PER_PIXEL(dst->pixel_format) == 32);
 			r->u.blit.stride = dst->stride;
 			r->u.blit.data = dst->data;
 			r->u.blit.src_stride = src->stride;

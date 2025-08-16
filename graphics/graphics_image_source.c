@@ -1181,7 +1181,7 @@ static PIXEL_MANIPULATE_IMAGE* PixelManipulateImageForRecording(
 
 		matrix = pattern->base.matrix;
 		status = GraphicsMatrixInvert(&matrix);
-		assert (status == GRAPHICS_STATUS_SUCCESS);
+		ASSERT(status == GRAPHICS_STATUS_SUCCESS);
 
 		x1 = limit.x;
 		y1 = limit.y;
@@ -1271,11 +1271,11 @@ done:
 		InitializeGraphicsPatternStaticCopy(&tmp_pattern.base, &pattern->base);
 		matrix = pattern->base.matrix;
 		status = GraphicsMatrixInvert(&matrix);
-		assert (status == GRAPHICS_STATUS_SUCCESS);
+		ASSERT(status == GRAPHICS_STATUS_SUCCESS);
 		GraphicsMatrixTranslate(&matrix, src_limit.x, src_limit.y);
 		GraphicsMatrixScale(&matrix, sx, sy);
 		status = GraphicsMatrixInvert(&matrix);
-		assert (status == GRAPHICS_STATUS_SUCCESS);
+		ASSERT(status == GRAPHICS_STATUS_SUCCESS);
 		GraphicsPatternSetMatrix(&tmp_pattern.base, &matrix);
 		if (! PixelManipulateImageSetProperties (pixman_image,
 			&tmp_pattern.base, extents,
@@ -1586,8 +1586,8 @@ static PIXEL_MANIPULATE_IMAGE* PixelManipulateImageForRaster(
 		return NULL;
 	}
 
-	assert (image->width == pattern->extents.width);
-	assert (image->height == pattern->extents.height);
+	ASSERT(image->width == pattern->extents.width);
+	ASSERT(image->height == pattern->extents.height);
 
 	pixman_image = CreatePixelManipulateImageBits(image->pixel_format,
 		image->width,

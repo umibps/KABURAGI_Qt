@@ -12,7 +12,8 @@ void DrawColorCircle(
 	QPixmap* pixmap,
 	int width,
 	int height,
-	FLOAT_T line_width
+	FLOAT_T line_width,
+	QColor background_color
 )
 {
 	QPainter painter;
@@ -24,6 +25,7 @@ void DrawColorCircle(
 	pen.setWidthF(line_width);
 
 	(void)painter.begin(pixmap);
+	painter.fillRect(QRect(0, 0, width, height), background_color);
 	for(int arc = -210 * 16, i = 0; i < 360; arc += 16, i++)
 	{
 		hsv.h = 360 - i - 1;
@@ -73,7 +75,8 @@ ColorChooserCircle::ColorChooserCircle(
 	setMinimumSize(width, height);
 
 	circle_pixmap = new QPixmap(width, height);
-	DrawColorCircle(circle_pixmap, width, height, line_width);
+	QColor background_color(palette().color(QPalette::Window));
+	DrawColorCircle(circle_pixmap, width, height, line_width, background_color);
 }
 
 ColorChooserCircle::~ColorChooserCircle()

@@ -909,12 +909,12 @@ void GraphicsMeshPatternRasterize(
 	const GRAPHICS_MESH_PATCH *patch;
 	const GRAPHICS_COLOR *c;
 
-	//assert (mesh->base.status == CAIRO_STATUS_SUCCESS);
-	//assert (mesh->current_patch == NULL);
+	//ASSERT (mesh->base.status == CAIRO_STATUS_SUCCESS);
+	//ASSERT (mesh->current_patch == NULL);
 
 	p2u = mesh->base.matrix;
 	status = GraphicsMatrixInvert(&p2u);
-	//assert (status == CAIRO_STATUS_SUCCESS);
+	//ASSERT (status == CAIRO_STATUS_SUCCESS);
 
 	n = mesh->patches.num_elements; // _cairo_array_num_elements (&mesh->patches);
 	patch = GraphicsArrayIndexConst(&mesh->patches, 0);

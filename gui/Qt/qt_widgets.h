@@ -35,6 +35,8 @@ extern "C" {
 
 EXTERN void ClearLayout(QLayout* layout);
 
+extern void PrintQobjectProperties(QObject* object);;
+
 #ifdef __cplusplus
 }
 #endif

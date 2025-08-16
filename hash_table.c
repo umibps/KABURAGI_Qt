@@ -40,6 +40,12 @@
 # define inline __inline
 #endif
 
+#ifdef _DEBUG
+# define ASSERT(expression) assert(expression)
+#else
+# define ASSERT(expression)
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -212,7 +218,7 @@ static inline void free_entry_chain(ght_hash_table_t *p_ht, ght_hash_entry_t *p_
 /* Fill in the data to a existing hash key */
 static inline void hk_fill(ght_hash_key_t *p_hk, int i_size, const void *p_key)
 {
-  assert(p_hk);
+  ASSERT(p_hk);
 
   p_hk->i_size = i_size;
   p_hk->p_key = p_key;
@@ -261,7 +267,7 @@ static inline ght_hash_entry_t *he_create(ght_hash_table_t *p_ht, void *p_data,
 /* Finalize (free) a hash entry */
 static inline void he_finalize(ght_hash_table_t *p_ht, ght_hash_entry_t *p_he)
 {
-  assert(p_he);
+  ASSERT(p_he);
 
 #if !defined(NDEBUG)
   p_he->p_next = NULL;
@@ -422,7 +428,7 @@ int ght_insert(ght_hash_table_t *p_ht,
   ght_uint32_t l_key;
   ght_hash_key_t key;
 
-  assert(p_ht);
+  ASSERT(p_ht);
 
   hk_fill(&key, i_key_size, p_key_data);
   l_key = get_hash_value(p_ht, &key) & p_ht->i_size_mask;
@@ -468,7 +474,7 @@ int ght_insert(ght_hash_table_t *p_ht,
 	   p->p_next != NULL;
 	   p = p->p_next);
 
-	  assert(p && p->p_next == NULL);
+	  ASSERT(p && p->p_next == NULL);
 
 	  remove_from_chain(p_ht, l_key, p); /* To allow it to be reinserted in fn_bucket_free */
 	  p_ht->fn_bucket_free(p->p_data, p->key.p_key);
@@ -479,7 +485,7 @@ int ght_insert(ght_hash_table_t *p_ht,
 	{
 	  p_ht->p_nr[l_key]++;
 
-	  assert( p_ht->pp_entries[l_key]?p_ht->pp_entries[l_key]->p_prev == NULL:1 );
+	  ASSERT( p_ht->pp_entries[l_key]?p_ht->pp_entries[l_key]->p_prev == NULL:1 );
 
 	  p_ht->i_items++;
 	}
@@ -508,7 +514,7 @@ void *ght_get(ght_hash_table_t *p_ht,
   ght_hash_key_t key;
   ght_uint32_t l_key;
 
-  assert(p_ht);
+  ASSERT(p_ht);
 
   hk_fill(&key, i_key_size, p_key_data);
 
@@ -534,14 +540,14 @@ void *ght_replace(ght_hash_table_t *p_ht,
   ght_uint32_t l_key;
   void *p_old;
 
-  assert(p_ht);
+  ASSERT(p_ht);
 
   hk_fill(&key, i_key_size, p_key_data);
 
   l_key = get_hash_value(p_ht, &key) & p_ht->i_size_mask;
 
   /* Check that the first element in the list really is the first. */
-  assert( p_ht->pp_entries[l_key]?p_ht->pp_entries[l_key]->p_prev == NULL:1 );
+  ASSERT( p_ht->pp_entries[l_key]?p_ht->pp_entries[l_key]->p_prev == NULL:1 );
 
   /* LOCK: p_ht->pp_entries[l_key] */
   p_e = search_in_bucket(p_ht, l_key, &key, p_ht->i_heuristics);
@@ -566,13 +572,13 @@ void *ght_remove(ght_hash_table_t *p_ht,
   ght_uint32_t l_key;
   void *p_ret=NULL;
 
-  assert(p_ht);
+  ASSERT(p_ht);
 
   hk_fill(&key, i_key_size, p_key_data);
   l_key = get_hash_value(p_ht, &key) & p_ht->i_size_mask;
 
   /* Check that the first element really is the first */
-  assert( (p_ht->pp_entries[l_key]?p_ht->pp_entries[l_key]->p_prev == NULL:1) );
+  ASSERT( (p_ht->pp_entries[l_key]?p_ht->pp_entries[l_key]->p_prev == NULL:1) );
 
   /* LOCK: p_ht->pp_entries[l_key] */
   p_out = search_in_bucket(p_ht, l_key, &key, 0);
@@ -602,7 +608,7 @@ void *ght_remove(ght_hash_table_t *p_ht,
 
 static inline void *first_keysize(ght_hash_table_t *p_ht, ght_iterator_t *p_iterator, const void **pp_key, unsigned int *size)
 {
-  assert(p_ht && p_iterator);
+  ASSERT(p_ht && p_iterator);
 
   /* Fill the iterator */
   p_iterator->p_entry = p_ht->p_oldest;
@@ -641,7 +647,7 @@ void *ght_first_keysize(ght_hash_table_t *p_ht, ght_iterator_t *p_iterator, cons
 
 static inline void *next_keysize(ght_hash_table_t *p_ht, ght_iterator_t *p_iterator, const void **pp_key, unsigned int *size)
 {
-  assert(p_ht && p_iterator);
+  ASSERT(p_ht && p_iterator);
 
   if (p_iterator->p_next)
 	{
@@ -687,7 +693,7 @@ void ght_finalize(ght_hash_table_t *p_ht)
 {
   int i;
 
-  assert(p_ht);
+  ASSERT(p_ht);
 
   if (p_ht->pp_entries)
 	{
@@ -720,11 +726,11 @@ void ght_rehash(ght_hash_table_t *p_ht, unsigned int i_size)
   void *p;
   int i;
 
-  assert(p_ht);
+  ASSERT(p_ht);
 
   /* Recreate the hash table with the new size */
   p_tmp = ght_create(i_size);
-  assert(p_tmp);
+  ASSERT(p_tmp);
 
   /* Set the flags for the new hash table */
   ght_set_hash(p_tmp, p_ht->fn_hash);
@@ -735,7 +741,7 @@ void ght_rehash(ght_hash_table_t *p_ht, unsigned int i_size)
   /* Walk through all elements in the table and insert them into the temporary one. */
   for (p = ght_first(p_ht, &iterator, &p_key); p; p = ght_next(p_ht, &iterator, &p_key))
 	{
-	  assert(iterator.p_entry);
+	  ASSERT(iterator.p_entry);
 
 	  /* Insert the entry into the new table */
 	  if (ght_insert(p_tmp,
