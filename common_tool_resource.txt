@@ -1,0 +1,7 @@
+"[TOOL1]\n"
+"NAME=\"スポイトツール\"\n"
+"IMAGE=\"./image/color_picker.png\"\n"
+"X=0\n"
+"Y=0\n"
+"TYPE=\"COLOR_PICKER\"\n"
+"MODE=1\n";

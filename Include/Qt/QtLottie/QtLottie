@@ -1,0 +1,7 @@
+#ifndef QT_QTLOTTIE_MODULE_H
+#define QT_QTLOTTIE_MODULE_H
+#include <QtLottie/QtLottieDepends>
+#include "qlottieglobal.h"
+#include "qlottieanimation.h"
+#include "qtlottieversion.h"
+#endif
