@@ -1108,6 +1108,7 @@ static void GraphicsGradientColorAverage(const GRAPHICS_GRADIENT_PATTERN* gradie
 	case GRAPHICS_EXTEND_NONE:
 	default:
 		InitializeGraphicsColorRGBA(color, 0, 0, 0, 0);
+		return;
 	}
 
 	r = delta0 * gradient->stops[0].color.red;

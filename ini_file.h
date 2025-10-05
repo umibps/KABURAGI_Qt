@@ -66,17 +66,17 @@ typedef struct _INI_FILE
 } INI_FILE, *INI_FILE_PTR;
 
 // 関数のプロトタイプ宣言
-/************************************************
-* CreateIniFile関数							 *
-* iniファイルを扱う構造体のメモリの確保と初期化 *
-* 引数										  *
-* io		: iniファイルデータへのポインタ	 *
-* read_func	: 読み込み用の関数				  *
-* data_size	: iniファイルのバイト数			 *
-* mode		: 読み込みモードか書き込みモードか  *
-* 返り値										*
-*	初期化された構造体のアドレス				*
-************************************************/
+/*
+* CreateIniFile関数
+* iniファイルを扱う構造体のメモリの確保と初期化
+* 引数
+* io		: iniファイルデータへのポインタ
+* read_func	: 読み込み用の関数
+* data_size	: iniファイルのバイト数
+* mode		: 読み込みモードか書き込みモードか
+* 返り値
+*	初期化された構造体のアドレス
+*/
 EXTERN INI_FILE_PTR CreateIniFile(
 	void* io,
 	size_t (*read_func)(void*, size_t, size_t, void*),
@@ -84,18 +84,30 @@ EXTERN INI_FILE_PTR CreateIniFile(
 	eINI_MODE mode
 );
 
-/********************************************************
-* WriteIniFile関数									  *
-* iniファイルに内容を書き出す						   *
-* 引数												  *
-* ini			: iniファイルを管理する構造体のアドレス *
-* write_func	: 書き出し用関数へのポインタ			*
-* 返り値												*
-*	正常終了(0)、以上終了(0以外)						*
-********************************************************/
+/*
+* WriteIniFile関数
+* バイナリモードiniファイルに内容を書き出す
+* 引数
+* ini			: iniファイルを管理する構造体のアドレス
+* write_func	: 書き出し用関数へのポインタ
+* 返り値
+*	正常終了(0)、以上終了(0以外)
+*/
 EXTERN int WriteIniFile(
 	INI_FILE_PTR ini,
 	size_t (*write_func)(void*, size_t, size_t, void*)
+);
+
+/*
+* WriteIniFileText関数
+* テキストモードのiniファイルに内容を書き出す
+* 引数
+* ini				: iniファイル管理する構造体のアドレス
+* write_function	: 書き出し用関数へのポインタ
+*/
+EXTERN int WriteIniFileText(
+	INI_FILE_PTR ini,
+	int (*write_function)(void*, const char*, ...)
 );
 
 /********************************************************

@@ -1,5 +1,5 @@
-#ifndef APPLICATION_H
-#define APPLICATION_H
+#ifndef _INCLUDED_APPLICATION_H_
+#define _INCLUDED_APPLICATION_H_
 
 #include "labels.h"
 #include "fractal_label.h"
@@ -15,6 +15,11 @@
 
 #define FILE_VERSION 6
 #define THUMBNAIL_SIZE 128
+
+#define APPLICATION_INITIALIZE_FILE_PATH "./application.ini"
+#define COMMON_TOOL_INITIALIZE_FILE_PATH "./common_tools.ini"
+#define BRUSH_INITIALIZE_FILE_PATH "./brushes.ini"
+#define VECTOR_BRUSH_INITIALIZE_FILE_PATH "./vector_brushes.ini"
 
 /*************************************************
 * eAPPLICATION_FLAGS列挙体					   *
@@ -191,8 +196,16 @@ EXTERN void AddDrawWindow2MainWindow(MAIN_WINDOW_WIDGETS_PTR main_window, DRAW_W
 
 EXTERN void InitializeBlendSelectionFunctions(void (*functions[])(LAYER* work, LAYER* selection));
 
+/*
+* WriteApplicationSettingFiles関数
+* 設定ファイルを書き込む
+* 引数
+* app	: アプリケーションを管理する構造体のアドレス
+*/
+EXTERN void WriteApplicationSettingFiles(APPLICATION* app);
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif // APPLICATION_H
+#endif /* #ifndef _INCLUDED_APPLICATION_H_ */

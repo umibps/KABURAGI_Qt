@@ -5,6 +5,7 @@
 #include "../anti_alias.h"
 #include "../graphics/graphics_surface.h"
 #include "../graphics/graphics_matrix.h"
+#include "../gui/brushes_gui.h"
 
 #ifdef _OPENMP
 # include <omp.h>
@@ -66,7 +67,7 @@ void BlendBrushPressCallBack(
 		// ブラシ処理中に合成モードの反映を行うため、作業レイヤーは常に通常合成
 		canvas->work_layer->layer_mode = LAYER_BLEND_NORMAL;
 
-		if((core->flags & BRUSH_FLAG_USE_OLD_ANTI_ALIAS) == 0 && (brush->core.flags & BRUSH_FLAG_ANTI_ALIAS) != 0)
+		if((core->flags & BRUSH_FLAG_USE_OLD_ANTI_ALIAS) == 0 && (core->flags & BRUSH_FLAG_ANTI_ALIAS) != 0)
 		{
 			brush_target = canvas->anti_alias;
 		}
@@ -76,7 +77,7 @@ void BlendBrushPressCallBack(
 		}
 
 		// 合成ターゲットに合わせてバッファにピクセルデータをコピー
-		if(brush->target == BLEND_BRUSH_TARGET_UNDER_LAYER && canvas->active_layer->prev != NULL)
+		if(brush->base_data.target == BLEND_BRUSH_TARGET_UNDER_LAYER && canvas->active_layer->prev != NULL)
 		{
 			(void)memcpy(canvas->brush_buffer, canvas->active_layer->prev->pixels, canvas->pixel_buf_size);
 		}
@@ -86,24 +87,24 @@ void BlendBrushPressCallBack(
 		}
 
 		// 最低筆圧のチェック
-		if(pressure < brush->core.minimum_pressure)
+		if(pressure < core->minimum_pressure)
 		{
-			pressure = brush->core.minimum_pressure;
+			pressure = core->minimum_pressure;
 		}
 
 		// 筆圧でサイズ変更するかフラグを見てからブラシの半径決定
-		if((brush->core.flags & BRUSH_FLAG_SIZE) == 0)
+		if((core->flags & BRUSH_FLAG_SIZE) == 0)
 		{
-			r = brush->core.radius;
+			r = core->radius;
 			zoom = 1;
 		}
 		else
 		{
-			r = brush->core.radius * pressure;
+			r = core->radius * pressure;
 			zoom = 1 / pressure;
 		}
 		// 筆圧で不透明度変更するかフラグを見てから不透明度決定
-		alpha = ((brush->core.flags & BRUSH_FLAG_FLOW) == 0) ? 1 : pressure;
+		alpha = ((core->flags & BRUSH_FLAG_FLOW) == 0) ? 1 : pressure;
 
 		// マウスの座標とブラシの半径から
 			// 描画する座標の最大・最小値を決定
@@ -120,7 +121,7 @@ void BlendBrushPressCallBack(
 		InitializeGraphicsDefaultContext(&update, &update_surface, &app->graphics);
 
 		// 今回の座標を記憶
-		brush->core.before_x = x, brush->core.before_y = y;
+		core->before_x = x, core->before_y = y;
 
 		// 描画領域からはみ出たら修正
 		if(min_x < 0.0)
@@ -370,7 +371,7 @@ void BlendBrushPressCallBack(
 			DestroyGraphicsContext(&update_temp.base);
 		}
 
-		brush->core.before_x = x, brush->core.before_y = y;
+		core->before_x = x, core->before_y = y;
 		GraphicsSurfaceFinish(&update_surface.base);
 		DestroyGraphicsContext(&update.base);
 
@@ -406,7 +407,7 @@ void BlendBrushPressCallBack(
 
 			InitializeGraphicsDefaultContext(&update, &draw_surface, &app->graphics);
 			GraphicsSetOperator(&update.base,
-								LayerBlendModeToGraphicsOperator(brush->blend_mode));
+								LayerBlendModeToGraphicsOperator(brush->base_data.blend_mode));
 			GraphicsSetSourceSurface(&update.base, &update_surface, 0, 0, &update_pattern);
 			GraphicsPaint(&update.base);
 
@@ -441,7 +442,7 @@ void BlendBrushPressCallBack(
 #endif
 		}
 
-		if((core->flags & BRUSH_FLAG_USE_OLD_ANTI_ALIAS) == 0 && (brush->core.flags & BRUSH_FLAG_ANTI_ALIAS) != 0)
+		if((core->flags & BRUSH_FLAG_USE_OLD_ANTI_ALIAS) == 0 && (core->flags & BRUSH_FLAG_ANTI_ALIAS) != 0)
 		{
 			if((canvas->flags & DRAW_WINDOW_DISPLAY_HORIZON_REVERSE) == 0)
 			{
@@ -501,7 +502,7 @@ void BlendBrushMotionCallBack(
 		GRAPHICS_IMAGE_SURFACE update_surface = { 0 };
 		FLOAT_T r, step, alpha, d;
 		FLOAT_T min_x, min_y, max_x, max_y;
-		FLOAT_T draw_x = brush->core.before_x, draw_y = brush->core.before_y;
+		FLOAT_T draw_x = core->before_x, draw_y = core->before_y;
 		FLOAT_T dx, dy, diff_x, diff_y;
 		FLOAT_T zoom;
 		int start_x, width, start_y, height;
@@ -512,7 +513,7 @@ void BlendBrushMotionCallBack(
 		uint8 *mask;
 		int i;
 
-		if((core->flags & BRUSH_FLAG_USE_OLD_ANTI_ALIAS) == 0 && (brush->core.flags & BRUSH_FLAG_ANTI_ALIAS) != 0)
+		if((core->flags & BRUSH_FLAG_USE_OLD_ANTI_ALIAS) == 0 && (core->flags & BRUSH_FLAG_ANTI_ALIAS) != 0)
 		{
 			brush_target = canvas->mask_temp;
 			work_pixel = canvas->anti_alias->pixels;
@@ -524,19 +525,19 @@ void BlendBrushMotionCallBack(
 		}
 
 		// 最低筆圧のチェック
-		if(pressure < brush->core.minimum_pressure)
+		if(pressure < core->minimum_pressure)
 		{
-			pressure = brush->core.minimum_pressure;
+			pressure = core->minimum_pressure;
 		}
 
-		if((brush->core.flags & BRUSH_FLAG_SIZE) == 0)
+		if((core->flags & BRUSH_FLAG_SIZE) == 0)
 		{
-			r = brush->core.radius;
+			r = core->radius;
 			zoom = 1;
 		}
 		else
 		{
-			r = brush->core.radius * pressure;
+			r = core->radius * pressure;
 			zoom = 1 / pressure;
 		}
 		step = r * BRUSH_STEP;
@@ -545,9 +546,9 @@ void BlendBrushMotionCallBack(
 			dx = 0;
 			goto skip_draw;
 		}
-		alpha = ((brush->core.flags & BRUSH_FLAG_FLOW) == 0) ?
+		alpha = ((core->flags & BRUSH_FLAG_FLOW) == 0) ?
 			1 : pressure;
-		dx = x - brush->core.before_x, dy = y - brush->core.before_y;
+		dx = x - core->before_x, dy = y - core->before_y;
 		d = sqrt(dx * dx + dy * dy);
 		if(step < MINIMUM_BRUSH_DISTANCE)
 		{
@@ -558,7 +559,7 @@ void BlendBrushMotionCallBack(
 		min_x = x - r * 2, min_y = y - r * 2;
 		max_x = x + r * 2, max_y = y + r * 2;
 
-		if((brush->core.flags & BRUSH_FLAG_ANTI_ALIAS) != 0)
+		if((core->flags & BRUSH_FLAG_ANTI_ALIAS) != 0)
 		{
 			max_x++;
 			max_y++;
@@ -914,7 +915,7 @@ void BlendBrushMotionCallBack(
 
 				InitializeGraphicsDefaultContext(&brush_update, &draw_surface, &app->graphics);
 				GraphicsSetOperator(&brush_update.base,
-							LayerBlendModeToGraphicsOperator(brush->blend_mode));
+							LayerBlendModeToGraphicsOperator(brush->base_data.blend_mode));
 				GraphicsSetSourceSurface(&brush_update.base, &brush_update_surface, 0, 0, &brush_update_pattern);
 				GraphicsPaint(&brush_update.base);
 			}
@@ -970,7 +971,7 @@ void BlendBrushMotionCallBack(
 			omp_set_num_threads(window->app->max_threads);
 #endif
 			// アンチエイリアスを適用
-			if((brush->core.flags & BRUSH_FLAG_ANTI_ALIAS) != 0)
+			if((core->flags & BRUSH_FLAG_ANTI_ALIAS) != 0)
 			{
 				ANTI_ALIAS_RECTANGLE range = { start_x - 1, start_y - 1,
 					width + 1, height + 1 };
@@ -1003,30 +1004,30 @@ skip_draw:
 			}
 		} while(1);
 
-		if((core->flags & BRUSH_FLAG_USE_OLD_ANTI_ALIAS) == 0 && (brush->core.flags & BRUSH_FLAG_ANTI_ALIAS) != 0)
+		if((core->flags & BRUSH_FLAG_USE_OLD_ANTI_ALIAS) == 0 && (core->flags & BRUSH_FLAG_ANTI_ALIAS) != 0)
 		{
 			//ANTI_ALIAS_RECTANGLE range = {(int)core->min_x - 1, (int)core->min_y - 1,
 			//	(int)(core->max_x - core->min_x) + 3, (int)(core->max_y - core->min_y) + 3};
 			ANTI_ALIAS_RECTANGLE range;
-			if(brush->core.before_x < x)
+			if(core->before_x < x)
 			{
-				range.x = (int)(brush->core.before_x - r * 2 - 4);
-				range.width = (int)(x - brush->core.before_x + r * 4 + 4);
+				range.x = (int)(core->before_x - r * 2 - 4);
+				range.width = (int)(x - core->before_x + r * 4 + 4);
 			}
 			else
 			{
 				range.x = (int)(x - r * 2 - 4);
-				range.width = (int)(brush->core.before_x - x + r * 4 + 4);
+				range.width = (int)(core->before_x - x + r * 4 + 4);
 			}
-			if(brush->core.before_y < y)
+			if(core->before_y < y)
 			{
-				range.y = (int)(brush->core.before_y - r * 2 - 4);
-				range.height = (int)(y - brush->core.before_y + r * 4 + 4);
+				range.y = (int)(core->before_y - r * 2 - 4);
+				range.height = (int)(y - core->before_y + r * 4 + 4);
 			}
 			else
 			{
 				range.y = (int)(y - r * 2 - 4);
-				range.height = (int)(brush->core.before_y - y + r * 4 + 4);
+				range.height = (int)(core->before_y - y + r * 4 + 4);
 			}
 
 			if((canvas->flags & DRAW_WINDOW_HAS_SELECTION_AREA) == 0
@@ -1062,7 +1063,7 @@ skip_draw:
 			}
 		}
 
-		brush->core.before_x = x, brush->core.before_y = y;
+		core->before_x = x, core->before_y = y;
 		canvas->flags |= DRAW_WINDOW_UPDATE_PART;
 	}
 }
@@ -1078,7 +1079,7 @@ void BlendBrushReleaseCallBack(
 		BLEND_BRUSH* brush = (BLEND_BRUSH*)core;
 		UPDATE_RECTANGLE update = { 0 };
 
-		if((brush->core.flags & BRUSH_FLAG_ANTI_ALIAS) != 0)
+		if((core->flags & BRUSH_FLAG_ANTI_ALIAS) != 0)
 		{
 			if((core->flags & BRUSH_FLAG_USE_OLD_ANTI_ALIAS) == 0)
 			{
@@ -1121,7 +1122,7 @@ void BlendBrushEditSelectionReleaseCallBack(
 	if(state->mouse_key_flag & MOUSE_KEY_FLAG_LEFT)
 	{
 		BLEND_BRUSH* brush = (BLEND_BRUSH*)core;
-		if((brush->core.flags & BRUSH_FLAG_ANTI_ALIAS) != 0)
+		if((core->flags & BRUSH_FLAG_ANTI_ALIAS) != 0)
 		{
 			if((core->flags & BRUSH_FLAG_USE_OLD_ANTI_ALIAS) == 0)
 			{
@@ -1151,6 +1152,55 @@ void BlendBrushEditSelectionReleaseCallBack(
 		GraphicsSurfaceFinish(&canvas->update.surface.base);
 		GraphicsDefaultContextFinish(&canvas->update.context);
 	}
+}
+
+/*
+* LoadBlendBrushData関数
+* 合成ブラシツールの設定データを読み取る
+* 引数
+* file			: 初期化ファイル読み取りデータ
+* section_name	: 初期化ファイルに合成ブラシが記録されてるセクション名
+* app			: ブラシ初期化にはアプリケーション管理用データが必要
+* 返り値
+*	合成ブラシツールデータ 使用終了後にMEM_FREE_FUNC必要
+*/
+BRUSH_CORE* LoadBlendBrushData(INI_FILE_PTR file, const char* section_name, APPLICATION* app)
+{
+	BLEND_BRUSH* brush = (BLEND_BRUSH*)MEM_CALLOC_FUNC(1, sizeof(*brush));
+
+	LoadGeneralBrushData(&brush->base_data, file, section_name, app);
+
+	brush->base_data.core.color = &app->tool_box.color_chooser.rgb;
+	brush->base_data.core.back_color = &app->tool_box.color_chooser.back_rgb;
+
+	brush->base_data.core.brush_type = BRUSH_TYPE_BLEND_BRUSH;
+	brush->base_data.core.name = IniFileStrdup(file, section_name, "NAME");
+	brush->base_data.core.image_file_path = IniFileStrdup(file, section_name, "IMAGE");
+	brush->base_data.core.press_function = BlendBrushPressCallBack;
+	brush->base_data.core.motion_function = BlendBrushMotionCallBack;
+	brush->base_data.core.release_function = BlendBrushReleaseCallBack;
+	brush->base_data.core.draw_cursor = BlendBrushDrawCursor;
+	brush->base_data.core.brush_data = BlendBrushGUI_New(app, &brush->base_data.core);
+	brush->base_data.core.create_detail_ui = CreateBlendBrushDetailUI;
+	brush->base_data.core.button_update = BlendBrushButtonUpdate;
+	brush->base_data.core.motion_update = BlendBrushMotionUpdate;
+	brush->base_data.core.change_zoom = BlendBrushChangeZoom;
+	brush->base_data.core.change_color = BlendBrushChangeColor;
+
+	return &brush->base_data.core;
+}
+
+/*
+* WriteBlendBrushData関数
+* 合成ブラシツールの設定データを記録する
+* 引数
+* file			: 書き込みファイル操作用データ
+* core			: 記録するツールデータ
+* section_name	: 記録するセクション名
+*/
+void WriteBlendBrushData(INI_FILE_PTR file, BRUSH_CORE* core, const char* section_name)
+{
+	WriteGeneralBrushData((GENERAL_BRUSH*)core, file, section_name, "BLEND_BRUSH");
 }
 
 #ifdef __cplusplus

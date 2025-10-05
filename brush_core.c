@@ -239,7 +239,37 @@ void ClearBeforeCursorPosition(
 #undef BRUSH_UPDATE_MARGIN
 }
 
+void DummyMouseCallBack(
+	DRAW_WINDOW* canvas,
+	BRUSH_CORE* core,
+	EVENT_STATE* state
+)
+{
+
+}
+
+void DummyBrushDrawCursor(
+	DRAW_WINDOW* canvas,
+	FLOAT_T x,
+	FLOAT_T y,
+	BRUSH_CORE* core
+)
+{
+
+}
+
+void DummyBrushButton_or_Move_Update(DRAW_WINDOW* canvas, FLOAT_T x, FLOAT_T y, BRUSH_CORE* core)
+{
+
+}
+
+void DummyBrushChangeZoom(FLOAT_T zoom, BRUSH_CORE* core)
+{
+
+}
+
 #define CURSOR_LINE_WIDTH (1)
+#define CROSS_CURSOR_SIZE (5)
 
 void DefaultBrushDrawCursor(
 	DRAW_WINDOW* canvas,
@@ -484,6 +514,243 @@ void DefaultBrushChangeColor(const uint8* color, void* data)
 	BRUSH_CORE *core= (BRUSH_CORE*)data;
 
 	BrushCoreSetCirclePattern(core, core->radius, core->outline_hardness, core->blur, core->opacity, color);
+}
+
+void WithoutShapeBrushDrawCursor(
+	DRAW_WINDOW* canvas,
+	FLOAT_T x,
+	FLOAT_T y,
+	BRUSH_CORE* core
+)
+{
+	GRAPHICS_SURFACE_PATTERN pattern = { 0 };
+	GRAPHICS_MATRIX matrix;
+	FLOAT_T radius = CROSS_CURSOR_SIZE * 0.5 + CURSOR_LINE_WIDTH;
+
+	InitializeGraphicsPatternForSurface(&pattern, &core->brush_cursor_surface.base);
+	InitializeGraphicsMatrixTranslate(&matrix, -(x - radius + CURSOR_LINE_WIDTH),
+		-(y - radius + CURSOR_LINE_WIDTH));
+	GraphicsPatternSetMatrix(&pattern.base, &matrix);
+	GraphicsSetSource(&canvas->disp_layer->context.base, &pattern.base);
+	GraphicsPaint(&canvas->disp_layer->context.base);
+
+	canvas->last_cursor_drawn_x = core->before_x;
+	canvas->last_cursor_drawn_y = core->before_x;
+}
+
+void WithoutShapeBrushButtonUpdate(DRAW_WINDOW* canvas, FLOAT_T x, FLOAT_T y, BRUSH_CORE* core)
+{
+#define UPDATE_MARGIN 3
+	FLOAT_T r = CROSS_CURSOR_SIZE * 0.5 * canvas->zoom_rate + UPDATE_MARGIN;
+	UpdateCanvasWidgetArea(canvas->widgets, (int)(x - r - 1), (int)(y - r - 1),
+		(int)(r * 2 + UPDATE_MARGIN), (int)(r * 2 + UPDATE_MARGIN));
+#undef UPDATE_MARGIN
+}
+
+void WithoutShapeBrushMotionUpdate(DRAW_WINDOW* canvas, FLOAT_T x, FLOAT_T y, BRUSH_CORE* core)
+{
+#define ZOOM_MARGIN 1.275
+#define BRUSH_UPDATE_MARGIN 7
+#define UPDATE_AREA_MARGIN 4
+	FLOAT_T start_x, start_y;
+	FLOAT_T width, height;
+	FLOAT_T r = CROSS_CURSOR_SIZE * 0.5
+		* canvas->zoom_rate * ZOOM_MARGIN + BRUSH_UPDATE_MARGIN;
+
+	if(canvas->before_cursor_x < x)
+	{
+		start_x = canvas->before_cursor_x - r;
+		width = r * 2 + x - canvas->before_cursor_x;
+	}
+	else
+	{
+		start_x = x - r;
+		width = r * 2 + canvas->before_cursor_x - x;
+	}
+
+	if(canvas->before_cursor_y < y)
+	{
+		start_y = canvas->before_cursor_y - r;
+		height = r * 2 + y - canvas->before_cursor_y;
+	}
+	else
+	{
+		start_y = y - r;
+		height = r * 2 + canvas->before_cursor_y - y;
+	}
+
+#undef BRUSH_UPDATE_MARGIN
+#undef ZOOM_MARGIN
+
+	if(core->cursor_update_info.update)
+	{
+		if(core->cursor_update_info.start_x > start_x)
+		{
+			int current_x = x - r;
+			int current_end_x = x + r;
+			int current_y = y - r;
+			int current_end_y = y + r;
+			int difference;
+
+			if(current_x < 0)
+			{
+				current_x = 0;
+			}
+			else if(current_x > canvas->disp_layer->width)
+			{
+				core->cursor_update_info.update = FALSE;
+			}
+
+			if(current_end_x > canvas->disp_layer->width)
+			{
+				current_end_x = canvas->disp_layer->width;
+			}
+			else if(current_end_x <= 0)
+			{
+				core->cursor_update_info.update = FALSE;
+			}
+
+			if(current_y < 0)
+			{
+				current_y = 0;
+			}
+			else if(current_y > canvas->disp_layer->height)
+			{
+				core->cursor_update_info.update = FALSE;
+			}
+
+			if(current_end_y > canvas->disp_layer->height)
+			{
+				current_end_y = canvas->disp_layer->height;
+			}
+			else if(current_end_y <= 0)
+			{
+				core->cursor_update_info.update = FALSE;
+			}
+
+			difference = core->cursor_update_info.start_x - start_x;
+			if(core->cursor_update_info.start_x > start_x)
+			{
+				core->cursor_update_info.start_x = start_x;
+				core->cursor_update_info.width += difference;
+			}
+			if(core->cursor_update_info.start_x + core->cursor_update_info.width < current_end_x)
+			{
+				core->cursor_update_info.width = current_end_x - core->cursor_update_info.start_x;
+			}
+
+			difference = core->cursor_update_info.start_y - start_y;
+			if(core->cursor_update_info.start_y > start_y)
+			{
+				core->cursor_update_info.start_y = start_y;
+				core->cursor_update_info.height += difference;
+			}
+			if(core->cursor_update_info.start_y + core->cursor_update_info.height < current_end_y)
+			{
+				core->cursor_update_info.height = current_end_y - core->cursor_update_info.start_y;
+			}
+		}
+	}
+	else
+	{
+		core->cursor_update_info.update = TRUE;
+
+		ClearBeforeCursorPosition(canvas, canvas->last_cursor_drawn_x, canvas->last_cursor_drawn_y, x, y, core);
+
+		core->cursor_update_info.start_x = x - r;
+		core->cursor_update_info.width = r * 2;
+		if(core->cursor_update_info.start_x < 0)
+		{
+			core->cursor_update_info.width += core->cursor_update_info.start_x;
+			core->cursor_update_info.start_x = 0;
+		}
+		if(core->cursor_update_info.width > canvas->disp_layer->width)
+		{
+			core->cursor_update_info.width = canvas->disp_layer->width;
+		}
+		else if(core->cursor_update_info.width <= 0)
+		{
+			core->cursor_update_info.update = FALSE;
+		}
+
+		core->cursor_update_info.start_y = y - r;
+		core->cursor_update_info.height = r * 2;
+		if(core->cursor_update_info.start_y < 0)
+		{
+			core->cursor_update_info.height += core->cursor_update_info.start_y;
+			core->cursor_update_info.start_y = 0;
+		}
+		if(core->cursor_update_info.height > canvas->disp_layer->height)
+		{
+			core->cursor_update_info.height = canvas->disp_layer->height;
+		}
+		else if(core->cursor_update_info.height <= 0)
+		{
+			core->cursor_update_info.update = FALSE;
+		}
+	}
+
+	//UpdateCanvasWidgetArea(canvas->widgets, (int)(x - r) - UPDATE_AREA_MARGIN, (int)(y - r) - UPDATE_AREA_MARGIN,
+	//						(int)(r*2) + UPDATE_AREA_MARGIN, (int)(r*2) + UPDATE_AREA_MARGIN);
+	ClearBeforeCursorPosition(canvas, canvas->before_cursor_x, canvas->before_cursor_y, x, y, core);
+
+	canvas->cursor_x = (x - canvas->half_size) * canvas->cos_value
+		- (y - canvas->half_size) * canvas->sin_value + canvas->add_cursor_x;
+	canvas->cursor_y = (y - canvas->half_size) * canvas->sin_value
+		+ (y - canvas->half_size) * canvas->cos_value + canvas->add_cursor_y;
+
+	canvas->before_cursor_x = x;
+	canvas->before_cursor_y = y;
+
+#undef UPDATE_AREA_MARGIN
+}
+
+void WithoutShapeBrushChangeZoom(FLOAT_T zoom, BRUSH_CORE* core)
+{
+	GRAPHICS_DEFAULT_CONTEXT context = { 0 };
+	FLOAT_T radius = (CROSS_CURSOR_SIZE * 0.5) + CURSOR_LINE_WIDTH;
+	int diameter = (int)(radius * 2 + 0.5) + CURSOR_LINE_WIDTH * 2;
+	int stride = diameter * 4;
+	size_t buffer_size = stride * diameter;
+	if(core->brush_cursor_buffer == NULL || buffer_size > core->brush_cursor_buffer_size)
+	{
+		core->brush_cursor_buffer = (uint8*)MEM_REALLOC_FUNC(core->brush_cursor_buffer, buffer_size);
+		if(core->brush_cursor_buffer == NULL)
+		{
+			return;
+		}
+		core->brush_cursor_buffer_size = buffer_size;
+	}
+
+	(void)memset(core->brush_cursor_buffer, 0, core->brush_cursor_buffer_size);
+	InitializeGraphicsImageSurfaceForData(&core->brush_cursor_surface, core->brush_cursor_buffer,
+		GRAPHICS_FORMAT_ARGB32, diameter, diameter, stride, &core->app->graphics);
+	InitializeGraphicsDefaultContext(&context, &core->brush_cursor_surface, &core->app->graphics);
+
+	GraphicsSetAntialias(&context.base, GRAPHICS_ANTIALIAS_GOOD);
+	GraphicsSetLineWidth(&context.base, CURSOR_LINE_WIDTH * 3);
+
+	GraphicsSetSourceRGB(&context.base, 1, 1, 1);
+	GraphicsMoveTo(&context.base, radius, 0);
+	GraphicsLineTo(&context.base, radius, radius * 2);
+	GraphicsStroke(&context.base);
+	GraphicsSetSourceRGB(&context.base, 1, 1, 1);
+	GraphicsMoveTo(&context.base, 0, radius);
+	GraphicsLineTo(&context.base, radius * 2, radius);
+	GraphicsStroke(&context.base);
+
+	GraphicsSetLineWidth(&context.base, CURSOR_LINE_WIDTH);
+
+	GraphicsSetSourceRGB(&context.base, 0, 0, 0);
+	GraphicsMoveTo(&context.base, radius, 0);
+	GraphicsLineTo(&context.base, radius, radius * 2);
+	GraphicsStroke(&context.base);
+	GraphicsSetSourceRGB(&context.base, 0, 0, 0);
+	GraphicsMoveTo(&context.base, 0, radius);
+	GraphicsLineTo(&context.base, radius * 2, radius);
+	GraphicsStroke(&context.base);
+
+	core->cursor_blend_mode = LAYER_BLEND_NORMAL;
 }
 
 typedef struct _BRUSH_HISTORY_DATA

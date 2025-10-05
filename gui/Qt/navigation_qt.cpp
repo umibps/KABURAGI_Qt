@@ -128,13 +128,82 @@ void NavigationViewWidget::paintScrollFrame(
 	painter.strokePath(line_path, stroke_pen);
 }
 
+NavigationZoomSelector::NavigationZoomSelector(
+	QWidget* parent,
+	NavigationViewWidget* view,
+	APPLICATION* app,
+	bool button_layout_vertical
+) : SpinScale(parent, tr("Zoom"), button_layout_vertical)
+{
+#define DEFAULT_CANVAS_ZOOM 100
+#define MINIMUM_CANVAS_ZOOM 10
+#define MAXIMUM_CANVAS_ZOOM 400
+
+	this->setMinimum(MINIMUM_CANVAS_ZOOM);
+	this->setMaximum(MAXIMUM_CANVAS_ZOOM);
+	this->setValue(DEFAULT_CANVAS_ZOOM);
+
+	this->app = app;
+	this->view = view;
+}
+
+NavigationZoomSelector::~NavigationZoomSelector()
+{
+
+}
+
+void NavigationZoomSelector::valueChanged(int zoom)
+{
+	SpinScale::valueChanged(zoom);
+
+	DRAW_WINDOW *canvas = GetActiveDrawWindow(app);
+
+	if(canvas != NULL)
+	{
+		DrawWindowChangeZoom(canvas, (int16)zoom);
+
+		view->update();
+	}
+}
+
+NavigationRotateSelector::NavigationRotateSelector(
+	QWidget* parent,
+	NavigationViewWidget* view,
+	APPLICATION* app,
+	bool button_layout_vertical
+)	: SpinScale(parent, tr("Rotate"), button_layout_vertical)
+{
+	setMinimum(-180);
+	setMaximum(180);
+	setValue(0);
+
+	this->view = view;
+	this->app = app;
+}
+
+NavigationRotateSelector::~NavigationRotateSelector()
+{
+}
+
+void NavigationRotateSelector::valueChanged(int angle)
+{
+	SpinScale::valueChanged(angle);
+
+	DRAW_WINDOW* canvas = GetActiveDrawWindow(app);
+
+	if(canvas != NULL)
+	{
+		DrawWindowChangeRotate(canvas, angle);
+	}
+}
+
 NavigationWindowWidget::NavigationWindowWidget(QWidget* parent, APPLICATION* app)
 	: QDockWidget(QWidget::tr("Navigation"), parent),
 	  view(parent, app),
 	vbox_widget(this),
 	vbox_layout(&this->vbox_widget),
-	zoom_selector(this),
-	rotate_selector(this),
+	zoom_selector(this, &view, app),
+	rotate_selector(this, &view, app),
 	reset_zoom_button(this),
 	reset_rotate_button(this)
 {
@@ -143,12 +212,6 @@ NavigationWindowWidget::NavigationWindowWidget(QWidget* parent, APPLICATION* app
 	zoom_selector.setCaption(tr("Canvas Zoom"));
 	rotate_selector.setCaption(tr("Canvas Rotate"));
 
-	zoom_selector.setMinimum(10);
-	zoom_selector.setMaximum(400);
-	zoom_selector.setValue(100);
-	rotate_selector.setMinimum(-180);
-	rotate_selector.setMaximum(180);
-
 	vbox_widget.setLayout(&vbox_layout);
 
 	vbox_layout.addWidget(&this->view);
@@ -156,7 +219,11 @@ NavigationWindowWidget::NavigationWindowWidget(QWidget* parent, APPLICATION* app
 	vbox_layout.addWidget(&this->rotate_selector);
 
 	reset_zoom_button.setText(tr("Reset Zoom"));
+	connect(&reset_zoom_button, &QPushButton::clicked,
+				this, &NavigationWindowWidget::zoomResetButtonClicked);
 	reset_rotate_button.setText(tr("Reset Rotate"));
+	connect(&reset_rotate_button, &QPushButton::clicked,
+				this, &NavigationWindowWidget::rotateResetButtonClicked);
 
 	vbox_layout.addWidget(&this->reset_zoom_button);
 	vbox_layout.addWidget(&this->reset_rotate_button);
@@ -201,6 +268,19 @@ void NavigationWindowWidget::paintScrollFrame(
 	view.paintScrollFrame(x, y, width, height, display_context);
 }
 
+void NavigationWindowWidget::zoomResetButtonClicked()
+{
+#define RESET_ZOOM_VALUE 100
+	zoom_selector.setValue(RESET_ZOOM_VALUE);
+	emit zoom_selector.valueChanged(RESET_ZOOM_VALUE);
+}
+
+void NavigationWindowWidget::rotateResetButtonClicked()
+{
+	rotate_selector.setValue(0);
+	emit rotate_selector.valueChanged(0);
+}
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -224,7 +304,7 @@ void NavigationSetDrawCanvasMatrix(
 )
 {
 	widgets->navigation_window->setDrawCanvasTransform(
-		zoom_x, zoom_y, angle, trans_x, trans_y);
+		1 / zoom_x, 1 / zoom_y, angle, trans_x, trans_y);
 }
 
 void NavigationSetCanvasPattern(NAVIGATION_WIDGETS* widgets, DRAW_WINDOW* canvas)

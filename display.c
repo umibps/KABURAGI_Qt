@@ -443,14 +443,14 @@ NO_UPDATE_BLEND:
 			}
 		}
 
-		//GraphicsSave(&canvas->scaled_mixed->context.base);
-		//GraphicsRectangle(&canvas->scaled_mixed->context.base, (int)(canvas->update.x * zoom), (int)(canvas->update.y * zoom),
-		//	(int)(canvas->update.width * zoom), (int)(canvas->update.height * zoom));
-		//GraphicsClip(&canvas->scaled_mixed->context.base);
+		GraphicsSave(&canvas->scaled_mixed->context.base);
+		GraphicsRectangle(&canvas->scaled_mixed->context.base, (int)(canvas->update.x * zoom), (int)(canvas->update.y * zoom),
+			(int)(canvas->update.width * zoom), (int)(canvas->update.height * zoom));
+		GraphicsClip(&canvas->scaled_mixed->context.base);
 		GraphicsSetOperator(&canvas->scaled_mixed->context.base, GRAPHICS_OPERATOR_OVER);
 		GraphicsSetSource(&canvas->scaled_mixed->context.base, &canvas->mixed_pattern.base);
 		GraphicsPaint(&canvas->scaled_mixed->context.base);
-		//GraphicsRestore(&canvas->scaled_mixed->context.base);
+		GraphicsRestore(&canvas->scaled_mixed->context.base);
 
 		DestroyGraphicsSurface(&part_update.surface.base);
 		DestroyGraphicsContext(&part_update.context.base);
@@ -652,6 +652,60 @@ execute_update:
 		| DRAW_WINDOW_UPDATE_ACTIVE_OVER | DRAW_WINDOW_UPDATE_AREA_INITIALIZED);
 	canvas->update.need_update = FALSE;
 	
+	return result;
+}
+
+/*
+* MixLayerForSave関数
+* 保存/自動選択/バケツツールのために背景ピクセルデータ無しでレイヤーを合成
+* 引数
+* canvas	: 合成を実施するキャンバス
+* 返り値
+*	合成されたレイヤー 使用後はDeleteLayer必要
+*/
+LAYER* MixLayerForSave(DRAW_WINDOW* canvas)
+{
+	LAYER *result = CreateLayer(0, 0, canvas->width, canvas->height,
+								4, TYPE_NORMAL_LAYER, NULL, NULL, NULL, canvas);
+	LAYER *source = canvas->layer;
+	LAYER *blend;
+	int blend_mode;
+
+	// 非表示以外の全てのレイヤーを合成
+	while(source != NULL)
+	{
+		blend = source;
+		blend_mode = source->layer_mode;
+
+		if((source->flags & LAYER_FLAG_INVISIBLE) == 0
+			&& source->layer_type != TYPE_LAYER_SET)
+		{
+			while(source->next != NULL && source->next->layer_type == TYPE_ADJUSTMENT_LAYER)
+			{
+				if((source->next->flags & LAYER_FLAG_INVISIBLE) != 0)
+				{
+					source->next->layer_data.adjustment_layer->filter_func(
+						source->layer_data.adjustment_layer, source->pixels, source->next->pixels,
+							source->width * source->height, source);
+				}
+				source->next->layer_data.adjustment_layer->update(
+					source->layer_data.adjustment_layer, source, result,
+						0, 0, source->width, source->height
+				);
+				blend = source->next;
+				source = source->next;
+			}
+
+			if(!(blend->layer_set != NULL
+				&& (blend->layer_set->flags & LAYER_FLAG_INVISIBLE) != 0))
+			{
+				canvas->layer_blend_functions[blend_mode](blend, result);
+			}
+		}
+
+		source = source->next;
+	}
+
 	return result;
 }
 

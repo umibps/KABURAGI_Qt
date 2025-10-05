@@ -273,12 +273,12 @@ void PixelManipulateTransformPoint_31_16_3d(
 
 	/* input vector values must have no more than 31 bits (including sign)
 	 * in the integer part */
-	assert (v->v[0] <   ((PIXEL_MANIPULATE_FIXED_48_16)1 << (30 + 16)));
-	assert (v->v[0] >= -((PIXEL_MANIPULATE_FIXED_48_16)1 << (30 + 16)));
-	assert (v->v[1] <   ((PIXEL_MANIPULATE_FIXED_48_16)1 << (30 + 16)));
-	assert (v->v[1] >= -((PIXEL_MANIPULATE_FIXED_48_16)1 << (30 + 16)));
-	assert (v->v[2] <   ((PIXEL_MANIPULATE_FIXED_48_16)1 << (30 + 16)));
-	assert (v->v[2] >= -((PIXEL_MANIPULATE_FIXED_48_16)1 << (30 + 16)));
+	ASSERT (v->v[0] <   ((PIXEL_MANIPULATE_FIXED_48_16)1 << (30 + 16)));
+	ASSERT (v->v[0] >= -((PIXEL_MANIPULATE_FIXED_48_16)1 << (30 + 16)));
+	ASSERT (v->v[1] <   ((PIXEL_MANIPULATE_FIXED_48_16)1 << (30 + 16)));
+	ASSERT (v->v[1] >= -((PIXEL_MANIPULATE_FIXED_48_16)1 << (30 + 16)));
+	ASSERT (v->v[2] <   ((PIXEL_MANIPULATE_FIXED_48_16)1 << (30 + 16)));
+	ASSERT (v->v[2] >= -((PIXEL_MANIPULATE_FIXED_48_16)1 << (30 + 16)));
 
 	for (i = 0; i < 3; i++)
 	{

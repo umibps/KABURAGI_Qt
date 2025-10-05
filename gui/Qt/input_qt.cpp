@@ -15,6 +15,11 @@ void CanvasMainWidget::mousePressEvent(QMouseEvent* event)
 	EVENT_STATE state;
 	MousePressEventToEventState((void*)event, &state);
 	MouseButtonPressEvent(canvas, &state);
+	if(event->button() == Qt::MouseButton::LeftButton)
+	{
+		grabMouse();
+		setFocus();
+	}
 }
 
 void CanvasMainWidget::mouseMoveEvent(QMouseEvent* event)
@@ -29,6 +34,10 @@ void CanvasMainWidget::mouseReleaseEvent(QMouseEvent* event)
 	EVENT_STATE state;
 	MouseReleaseEventToEventState((void*)event, &state);
 	MouseButtonReleaseEvent(canvas, &state);
+	if(event->button() == Qt::MouseButton::LeftButton)
+	{
+		releaseMouse();
+	}
 }
 
 void CanvasMainWidget::tabletEvent(QTabletEvent* event)

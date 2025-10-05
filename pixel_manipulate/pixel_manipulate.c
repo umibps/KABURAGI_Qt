@@ -148,6 +148,7 @@ PIXEL_MANIPULATE_IMAGE* PixelManipulateAllocate(void)
 	image = (PIXEL_MANIPULATE_IMAGE*)MEM_ALLOC_FUNC(sizeof(*image));
 
 	InitializePixelManipulateImage(image);
+	image->common.self_allocated = TRUE;
 
 	return image;
 }
@@ -677,6 +678,11 @@ void PixelManipulateImageComposite32(
 	{
 		goto OUT;
 	}
+
+	extents.x1 -= src_x - mask_x;
+	extents.y1 -= src_y - mask_y;
+	extents.x2 -= src_x - mask_x;
+	extents.y2 -= src_y - mask_y;
 
 #define NEAREST_OPAQUE	(FAST_PATH_SAMPLES_OPAQUE |			\
 			 FAST_PATH_NEAREST_FILTER |			\

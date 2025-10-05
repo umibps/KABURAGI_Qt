@@ -328,7 +328,10 @@ eGRAPHICS_STATUS GraphicsStatePaint(GRAPHICS_STATE* state)
 		pattern = &source_pattern.base;
 	}
 
-	return GraphicsSurfacePaint(state->target, op, pattern, state->clip);
+	status = GraphicsSurfacePaint(state->target, op, pattern, state->clip);
+	state->source = &((GRAPHICS*)state->target->graphics)->nil_pattern;
+
+	return status;
 }
 
 eGRAPHICS_STATUS GraphicsStateMask(GRAPHICS_STATE* state, GRAPHICS_PATTERN* mask)
@@ -407,6 +410,8 @@ eGRAPHICS_STATUS GraphicsStateMask(GRAPHICS_STATE* state, GRAPHICS_PATTERN* mask
 	{
 		status = GraphicsSurfaceMask(state->target, op, source, &mask_pattern.base, state->clip);
 	}
+
+	state->source = &((GRAPHICS*)state->target->graphics)->nil_pattern;
 
 	return status;
 }

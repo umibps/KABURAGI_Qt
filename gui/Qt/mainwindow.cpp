@@ -11,6 +11,7 @@
 #include "../../navigation.h"
 #include "../../memory.h"
 #include "../../image_file/png_file.h"
+#include "../../brushes.h"
 
 MainWindow::MainWindow(QWidget* parent, APPLICATION* app)
 	: QMainWindow(parent),
@@ -75,6 +76,12 @@ MainWindow::~MainWindow()
 	{
 		delete this->app->widgets->tool_box;
 	}
+}
+
+void MainWindow::closeEvent(QCloseEvent* event)
+{
+	WriteApplicationSettingFiles(app);
+	event->accept();
 }
 
 void MainWindow::CreateNormalMenuBar(void)

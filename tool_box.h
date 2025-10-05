@@ -44,7 +44,7 @@ typedef enum _eTOOL_BOX_FLAGS
 	TOOL_BUTTON_STOPPED = 0x80
 } eTOOL_BOX_FLAGS;
 
-typedef struct _TOOL_BOX
+struct _TOOL_BOX
 {
 	// 現在表示しているツールの種類 (アクティブレイヤー依存)
 	eLAYER_TYPE current_tool_type;
@@ -101,7 +101,14 @@ typedef struct _TOOL_BOX
 	uint8 pallete_use[((PALLETE_WIDTH*PALLETE_HEIGHT)+7)/8];
 	// ツールボックス全体で扱うフラグ
 	unsigned int flags;
-} TOOL_BOX;
+};
+
+extern void WriteToolBoxData(
+	APPLICATION* app,
+	const char* common_tool_file_path,
+	const char* brush_file_path,
+	const char* vector_brush_file_path
+);
 
 extern void ToolDummyFunction(
     struct _DRAW_WINDOW* canvas,

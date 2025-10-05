@@ -1,6 +1,7 @@
 #include "../common_tools.h"
 #include "../gui/draw_window.h"
 #include "../application.h"
+#include "../gui/common_tools_gui.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -73,6 +74,35 @@ void ColorPickerButtonPressCallback(
 #endif
 		RGB2HSV_Pixel(color, &canvas->app->tool_box.color_chooser.hsv);
 	}
+}
+
+/*
+* LoadColorPickerDetailData関数
+* スポイトツールの設定データを読み取る
+* 引数
+* file			: 初期化ファイル読み取りデータ
+* section_name	: 初期化ファイルにスポイトが記録されているセクション名
+* app			: ツールの初期化にはアプリケーション管理用データが必要
+*/
+COMMON_TOOL_CORE* LoadColorPickerDetailData(INI_FILE_PTR* file, const char* section_name, APPLICATION* app)
+{
+	COLOR_PICKER *picker = (COLOR_PICKER*)MEM_CALLOC_FUNC(1, sizeof(*picker));
+
+	picker->mode = (uint8)IniFileGetInteger(file, section_name, "MODE");
+	picker->core.app = app;
+	app->tool_box.color_picker.mode = picker->mode;
+
+	picker->core.tool_type = TYPE_COLOR_PICKER;
+	picker->core.name = IniFileStrdup(file, section_name, "NAME");
+	picker->core.image_file_path = IniFileStrdup(file, section_name, "IMAGE");
+	picker->core.press_function = (common_tool_function)ColorPickerButtonPressCallback;
+	picker->core.motion_function = (common_tool_function)ColorPickerMotionCallback;
+	picker->core.release_function = (common_tool_function)ColorPickerReleaseCallback;
+	picker->core.display_function = (common_tool_display_function)ColorPickerDrawCursor;
+	picker->core.tool_data = ColorPickerGUI_New(app, &picker->core);
+	picker->core.create_detail_ui = CreateColorPickerDetailUI;
+
+	return &picker->core;
 }
 
 #ifdef __cplusplus

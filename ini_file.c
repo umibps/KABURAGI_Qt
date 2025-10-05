@@ -294,17 +294,17 @@ static int KeyFind(const SECTION_PTR section, const char* key_name)
 	return -2;	// キーが見つからなかった
 }
 
-/************************************************
-* CreateIniFile関数							 *
-* iniファイルを扱う構造体のメモリの確保と初期化 *
-* 引数										  *
-* io		: iniファイルデータへのポインタ	 *
-* read_func	: 読み込み用の関数				  *
-* data_size	: iniファイルのバイト数			 *
-* mode		: 読み込みモードか書き込みモードか  *
-* 返り値										*
-*	初期化された構造体のアドレス				*
-************************************************/
+/*
+* CreateIniFile関数
+* iniファイルを扱う構造体のメモリの確保と初期化
+* 引数
+* io		: iniファイルデータへのポインタ
+* read_func	: 読み込み用の関数
+* data_size	: iniファイルのバイト数
+* mode		: 読み込みモードか書き込みモードか
+* 返り値
+*	初期化された構造体のアドレス
+*/
 INI_FILE_PTR CreateIniFile(
 	void* io,
 	size_t (*read_func)(void*, size_t, size_t, void*),
@@ -482,22 +482,16 @@ INI_FILE_PTR CreateIniFile(
 	return ret;
 }
 
-/********************************************************
-* WriteIniFile関数									  *
-* iniファイルに内容を書き出す						   *
-* 引数												  *
-* ini			: iniファイルを管理する構造体のアドレス *
-* write_func	: 書き出し用関数へのポインタ			*
-* 返り値												*
-*	正常終了(0)、以上終了(0以外)						*
-********************************************************/
-int WriteIniFile(
-	INI_FILE_PTR ini,
-	size_t (*write_func)(void*, size_t, size_t, void*)
-)
+/*
+* MakeWriteIniFileBuffer関数
+* iniファイル書き出し前のバッファ作成
+* 引数
+* ini	: ファイル書き出し用データ
+*/
+static char* MakeWriteIniFileBuffer(INI_FILE_PTR ini)
 {
-	char *buff;	// 書き出す内容を格納するバッファ
-	char *p;	// 書き込みの文字比較用
+	char* buff;	// 書き出す内容を格納するバッファ
+	char* p;	// 書き込みの文字比較用
 	int len;	// 書き出すサイズ
 	int i, j;	// for文用のカウンタ
 
@@ -509,7 +503,7 @@ int WriteIniFile(
 
 	// 保存サイズを計算する
 	len = 0;
-	for(i=0; i<ini->section_count; i++)
+	for(i = 0; i < ini->section_count; i++)
 	{
 		// セクション名の長さと「[」「]」を足す
 		len += (int)strlen((ini->section + i)->section_name) + 4;
@@ -519,7 +513,7 @@ int WriteIniFile(
 			continue;
 		}
 
-		for(j=0; j<(ini->section + i)->key_count; j++)
+		for(j = 0; j < (ini->section + i)->key_count; j++)
 		{
 			// キーの名前をさす文字列がなければスキップ
 			if(*((ini->section + i)->key + j)->key_name == '\0')
@@ -546,7 +540,7 @@ int WriteIniFile(
 	}	// for(i=0; i<ini->section_count; i++)
 
 	// バッファのメモリの確保
-	p = buff = (char*)MEM_ALLOC_FUNC(sizeof(char)*len*2);
+	p = buff = (char*)MEM_ALLOC_FUNC(sizeof(char) * len * 2);
 
 	// メモリ確保のチェック
 #ifdef _DEBUG
@@ -559,7 +553,7 @@ int WriteIniFile(
 #endif
 
 	// 保存文字列の作成
-	for(i=0; i<ini->section_count; i++)
+	for(i = 0; i < ini->section_count; i++)
 	{
 		// セクションにキーの情報がなかたらスキップ
 		if((ini->section + i)->key == NULL)
@@ -579,7 +573,7 @@ int WriteIniFile(
 		}	// if(i != 0)
 
 		// キーの文字列を追加
-		for(j=0; j<(ini->section + i)->key_count; j++)
+		for(j = 0; j < (ini->section + i)->key_count; j++)
 		{
 			// キーの文字列が存在するかを判断
 			if(*((ini->section + i)->key + j)->key_name == '\0')
@@ -610,20 +604,59 @@ int WriteIniFile(
 	}	// for(i=0; i<ini->section_count; i++)
 	*p = '\0';	// 最後にヌル文字を追加しておく
 
-	(void)write_func(buff, 1, strlen(buff), ini->io);
+	return buff;
+}
 
+/*
+* WriteIniFile関数
+* バイナリモードiniファイルに内容を書き出す
+* 引数
+* ini			: iniファイルを管理する構造体のアドレス
+* write_func	: 書き出し用関数へのポインタ
+* 返り値
+*	正常終了(0)、以上終了(0以外)
+*/
+int WriteIniFile(
+	INI_FILE_PTR ini,
+	size_t (*write_func)(void*, size_t, size_t, void*)
+)
+{
+	char *buff = MakeWriteIniFileBuffer(ini);
+
+	(void)write_func(buff, 1, strlen(buff), ini->io);
 	// メモリの開放
 	MEM_FREE_FUNC(buff);
 
 	return 0;
 }
 
-/********************************************************
-* Delete_INI_FILE関数								   *
-* iniファイルを管理する構造体のメモリを開放する		 *
-* 引数												  *
-* ini			: iniファイルを管理する構造体のアドレス *
-********************************************************/
+/*
+* WriteIniFileText関数
+* テキストモードのiniファイルに内容を書き出す
+* 引数
+* ini				: iniファイル管理する構造体のアドレス
+* write_function	: 書き出し用関数へのポインタ
+*/
+int WriteIniFileText(
+	INI_FILE_PTR ini,
+	int (*write_function)(void*, const char*, ...)
+)
+{
+	char *buff = MakeWriteIniFileBuffer(ini);
+
+	(void)write_function(ini->io, buff);
+
+	MEM_FREE_FUNC(buff);
+
+	return 0;
+}
+
+/*
+* Delete_INI_FILE関数
+* iniファイルを管理する構造体のメモリを開放する
+* 引数
+* ini			: iniファイルを管理する構造体のアドレス
+*/
 static void Delete_INI_FILE(INI_FILE_PTR ini)
 {
 	int i, j;	// for文用のカウンタ
@@ -1143,7 +1176,7 @@ int IniFileAddString(
 	// 文字列がなかったらそのまま書き出し
 	if(str == NULL || *str == '\0')
 	{
-		return IniFileAddData(ini, section_name, key_name, "");
+		return IniFileAddData(ini, section_name, key_name, "\"\"");
 	}
 
 	// バッファのメモリを確保する

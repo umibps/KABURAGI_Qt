@@ -1,6 +1,11 @@
 #include "navigation.h"
 #include "draw_window.h"
+#include "application.h"
 #include "gui/navigation.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /*
 * ChangeNavigationRotate関数
@@ -62,6 +67,32 @@ void ChangeNavigationRotate(
 		NavigationSetDrawCanvasMatrix(navigation->widgets, - zoom_x * ROOT2, zoom_y * ROOT2,
 			canvas->angle, trans_x, trans_y);
 	}
+}
+
+/*
+* SetNavigationAngle関数
+* ナビゲーション中の回転角を変更する
+* 引数
+* navigation	: ナビゲーションウィンドウの情報
+* app			: アプリケーション管理情報
+* angle			: 設定角(°)
+*/
+void SetNavigationAngle(
+	NAVIGATION* navigation,
+	APPLICATION* app,
+	int angle
+)
+{
+	DRAW_WINDOW *canvas;
+
+	canvas = GetActiveDrawWindow(app);
+
+	// ラジアンに変更して記録
+	canvas->angle = (FLOAT_T)angle * M_PI / 180;
+
+	// 回転表示用の値を更新
+	canvas->sin_value = sin(canvas->angle);
+	canvas->cos_value = cos(canvas->angle);
 }
 
 void ChangeNavigationDrawWindow(
@@ -178,3 +209,7 @@ void DiplayNavigation(
 		NavigationDrawScrollFrame(navigation->widgets, x, y, width, height, draw_context);
 	}
 }
+
+#ifdef __cplusplus
+}
+#endif

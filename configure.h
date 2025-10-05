@@ -1,6 +1,11 @@
 #ifndef _INCLUDED_CONFIGURE_H_
 #define _INCLUDED_CONFIGURE_H_
 
+#define APPLICATION_INITIALIZE_FILE_PATH "./application.ini"
+#define COMMON_TOOL_INITIALIZE_FILE_PATH "./common_tools.ini"
+#define BRUSH_INITIALIZE_FILE_PATH "./brushes.ini"
+#define VECTOR_BRUSH_INITIALIZE_FILE_PATH "./vector_brushes.ini"
+
 #define CHECK_MEMORY_POOL 0
 #define USE_BGR_COLOR_SPACE 1
 

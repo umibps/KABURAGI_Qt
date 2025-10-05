@@ -35,15 +35,19 @@ class SpinScale : public QSpinBox
 	Q_OBJECT
 protected:
 	void paintEvent(QPaintEvent* event) override;
+	void mousePressEvent(QMouseEvent* event) override;
+
 public:
 	SpinScale(QWidget* parent = NULL, QString caption = "", bool button_layout_vertical = true);
 	SpinScale(QWidget* parent, int value, int maximum, int minimum,
 				QString caption = "", bool button_laytout_vertical = true);
 
-	virtual void valueChanged(int value);
 
 	void setCaption(const char* caption);
 	void setCaption(const QString caption);
+
+signals:
+	virtual void valueChanged(int value);
 
 private:
 	SpinScaleLineEdit line_edit;
@@ -75,15 +79,18 @@ class DoubleSpinScale : public QDoubleSpinBox
 	Q_OBJECT
 protected:
 	void paintEvent(QPaintEvent* event) override;
+	void mousePressEvent(QMouseEvent* event) override;
+
 public:
 	DoubleSpinScale(QWidget* parent = NULL, QString caption = "", bool button_layout_vertical = true);
 	DoubleSpinScale(QWidget* parent, double value, double maximum, double minimum,
 				QString caption = "", bool button_laytout_vertical = true);
 
-	virtual void valueChanged(double value);
-
 	void setCaption(const char* caption);
 	void setCaption(const QString caption);
+
+signals:
+	virtual void valueChanged(double value);
 
 private:
 	DoubleSpinScaleLineEdit line_edit;

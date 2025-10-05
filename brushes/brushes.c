@@ -11,9 +11,17 @@ extern "C" {
 void LoadDefaultBrushData(
 	BRUSH_CORE* core,
 	INI_FILE_PTR file,
-	const char* section_name
+	const char* section_name,
+	APPLICATION* app
 )
 {
+	core->name = IniFileStrdup(file, section_name, "NAME");
+	core->image_file_path = IniFileStrdup(file, section_name, "IMAGE");
+
+	core->color = &app->tool_box.color_chooser.rgb;
+	core->back_color = &app->tool_box.color_chooser.back_rgb;
+	core->app = app;
+
 	core->base_scale = IniFileGetInteger(file, section_name, "MAGNIFICATION") - 1;
 	if(core->base_scale < 0)
 	{
@@ -45,6 +53,50 @@ void LoadDefaultBrushData(
 	}
 }
 
+void LoadGeneralBrushData(
+	GENERAL_BRUSH* brush,
+	INI_FILE_PTR file,
+	const char* section_name,
+	APPLICATION* app
+)
+{
+	LoadDefaultBrushData(&brush->core, file, section_name, app);
+
+	brush->enter = IniFileGetInteger(file, section_name, "ENTER_SIZE");
+	brush->out = IniFileGetInteger(file, section_name, "OUT_SIZE");
+	brush->target = IniFileGetInteger(file, section_name, "TARGET");
+	brush->blend_mode = IniFileGetInteger(file, section_name, "BLEND_MODE");
+}
+
+void WriteDefaultBrushData(
+	BRUSH_CORE* core,
+	INI_FILE_PTR file,
+	const char* section_name,
+	const char* brush_type
+)
+{
+	(void)IniFileAddString(file, section_name, "TYPE", brush_type);
+
+	(void)IniFileAddInteger(file, section_name, "MAGNIFICATION", core->base_scale, 10);
+	(void)IniFileAddDouble(file, section_name, "SIZE", core->stride * 2, 2);
+	(void)IniFileAddDouble(file, section_name, "FLOW", core->opacity * 100, 2);
+}
+
+void WriteGeneralBrushData(
+	GENERAL_BRUSH* brush,
+	INI_FILE_PTR file,
+	const char* section_name,
+	const char* brush_type
+)
+{
+	WriteDefaultBrushData(&brush->core, file, section_name, brush_type);
+
+	(void)IniFileAddDouble(file, section_name, "ENTER_SIZE", brush->enter * 100, 2);
+	(void)IniFileAddDouble(file, section_name, "OUT_SIZE", brush->out * 100, 2);
+	(void)IniFileAddDouble(file, section_name, "TARGET", brush->target, 10);
+	(void)IniFileAddDouble(file, section_name, "BLEND_MODE", brush->blend_mode, 10);
+}
+
 void LoadBrushDetailData(
 	BRUSH_CORE** core,
 	INI_FILE_PTR file,
@@ -57,71 +109,19 @@ void LoadBrushDetailData(
 	
 	if(StringCompareIgnoreCase(brush_type, "PENCIL") == STRING_EQUAL)
 	{
-		PENCIL *pencil;
-		pencil = (PENCIL*)(*core = (BRUSH_CORE*)MEM_ALLOC_FUNC(sizeof(*pencil)));
-		(void)memset(pencil, 0, sizeof(*pencil));
-
-		InitializeBrushCore(&pencil->core, app);
-		LoadDefaultBrushData(*core, file, section_name);
-		
-		pencil->core.brush_type = BRUSH_TYPE_PENCIL;
-		pencil->core.name = IniFileStrdup(file, section_name, "NAME");
-		pencil->core.image_file_path = IniFileStrdup(file, section_name, "IMAGE");
-		pencil->core.press_function = PencilPressCallBack;
-		pencil->core.motion_function = PencilMotionCallBack;
-		pencil->core.release_function = PencilReleaseCallBack;
-		pencil->core.draw_cursor = PencilDrawCursor;
-		pencil->core.brush_data = PencilGUI_New(app, &pencil->core);
-		pencil->core.create_detail_ui = CreatePencilDetailUI;
-		pencil->core.button_update = PencilButtonUpdate;
-		pencil->core.motion_update = PencilMotionUpdate;
-		pencil->core.change_zoom = PencilChangeZoom;
-		pencil->core.change_color = PcncilChangeColor;
+		*core = LoadPencilData(file, section_name, app);
 	}
 	else if(StringCompareIgnoreCase(brush_type, "ERASER") == STRING_EQUAL)
 	{
-		ERASER *eraser;
-		eraser = (ERASER*)(*core = (BRUSH_CORE*)MEM_ALLOC_FUNC(sizeof(*eraser)));
-		(void)memset(eraser, 0, sizeof(*eraser));
-
-		InitializeBrushCore(&eraser->core, app);
-		LoadDefaultBrushData(*core, file, section_name);
-
-		eraser->core.brush_type = BRUSH_TYPE_ERASER;
-		eraser->core.name = IniFileStrdup(file, section_name, "NAME");
-		eraser->core.image_file_path = IniFileStrdup(file, section_name, "IMAGE");
-		eraser->core.press_function = EraserPressCallBack;
-		eraser->core.motion_function = EraserMotionCallBack;
-		eraser->core.release_function = EraserReleaseCallBack;
-		eraser->core.draw_cursor = EraserDrawCursor;
-		eraser->core.brush_data = EraserGUI_New(app, &eraser->core);
-		eraser->core.create_detail_ui = CreateEraserDetailUI;
-		eraser->core.button_update = EraserButtonUpdate;
-		eraser->core.motion_update = EraserMotionUpdate;
-		eraser->core.change_zoom = EraserChangeZoom;
+		*core = LoadEraserData(file, section_name, app);
+	}
+	else if(StringCompareIgnoreCase(brush_type, "BUCKET") == STRING_EQUAL)
+	{
+		*core = LoadBucketData(file, section_name, app);
 	}
 	else if(StringCompareIgnoreCase(brush_type, "BLEND_BRUSH") == STRING_EQUAL)
 	{
-		BLEND_BRUSH *brush;
-		brush = (BLEND_BRUSH*)(*core = (BRUSH_CORE*)MEM_ALLOC_FUNC(sizeof(*brush)));
-		(void)memset(brush, 0, sizeof(*brush));
-
-		InitializeBrushCore(&brush->core, app);
-		LoadDefaultBrushData(*core, file, section_name);
-
-		brush->core.brush_type = BRUSH_TYPE_BLEND_BRUSH;
-		brush->core.name = IniFileStrdup(file, section_name, "NAME");
-		brush->core.image_file_path = IniFileStrdup(file, section_name, "IMAGE");
-		brush->core.press_function = BlendBrushPressCallBack;
-		brush->core.motion_function = BlendBrushMotionCallBack;
-		brush->core.release_function = BlendBrushReleaseCallBack;
-		brush->core.draw_cursor = BlendBrushDrawCursor;
-		brush->core.brush_data = BlendBrushGUI_New(app, &brush->core);
-		brush->core.create_detail_ui = CreateBlendBrushDetailUI;
-		brush->core.button_update = BlendBrushButtonUpdate;
-		brush->core.motion_update = BlendBrushMotionUpdate;
-		brush->core.change_zoom = BlendBrushChangeZoom;
-		brush->core.change_color = BlendBrushChangeColor;
+		*core = LoadBlendBrushData(file, section_name, app);
 	}
 
 	if(*core != NULL)
@@ -134,6 +134,105 @@ void LoadBrushDetailData(
 			(*core)->change_zoom((active_canvas != NULL) ? active_canvas->zoom_rate : 1, *core);
 		}
 	}
+}
+
+/*
+* WriteBrushDetailData関数
+* ブラシの詳細設定を書き出す
+* 引数
+* tool_box	: ツールボックスウィンドウ
+* file_path	: 書き出すファイルのパス
+* app		: アプリケーションを管理する構造体のアドレス
+* 返り値
+*	正常終了:0	失敗:負の値
+*/
+int WriteBrushDetailData(TOOL_BOX* tool_box, const char* file_path, APPLICATION* app)
+{
+	FILE *fp;
+	INI_FILE_PTR file;
+	char brush_section_name[1024];
+	char *write_string, brush_name[1024], hot_key[2] = {0};
+	int brush_id = 1;
+	int x, y;
+
+	if((fp = fopen(file_path, "w")) == NULL)
+	{
+		return -1;
+	}
+
+	file = CreateIniFile((void*)fp, NULL, 0, INI_WRITE);
+
+	// 文字コード記録
+	if(tool_box->brush_code != NULL && *tool_box->brush_code != '\0')
+	{
+		IniFileAddString(file, "CODE", "CODE_TYPE", tool_box->brush_code);
+	}
+	else
+	{
+		IniFileAddString(file, "CODE", "CODE_TYPE", "UTF-8");
+	}
+
+	// フォントファイル名を記録
+	IniFileAddString(file, "FONT", "FONT_FILE", tool_box->font_file);
+
+	// ブラシテーブルの内容を記録
+	for(y=0; y<BRUSH_TABLE_HEIGHT; y++)
+	{
+		for(x = 0; x<BRUSH_TABLE_WIDTH; x++)
+		{
+			if(tool_box->brushes[y][x] != NULL
+				&& tool_box->brushes[y][x]->name != NULL)
+			{
+				(void)sprintf(brush_section_name, "BRUSH%d", brush_id);
+
+				(void)strcpy(brush_name, tool_box->brushes[y][x]->name);
+				StringRepalce(brush_name, "\n", "\\n");
+				if(tool_box->brush_code == NULL ||
+					StringCompareIgnoreCase(tool_box->brush_code, "UTF-8") == STRING_EQUAL)
+				{
+					write_string = MEM_STRDUP_FUNC(brush_name);
+				}
+				else
+				{
+					write_string = FromUTF8(brush_name, tool_box->brush_code);
+				}
+				(void)IniFileAddString(file, brush_section_name, "NAME", write_string);
+				MEM_FREE_FUNC(write_string);
+
+				(void)IniFileAddString(file, brush_section_name,
+					"IMAGE", tool_box->brushes[y][x]->image_file_path);
+				(void)IniFileAddInteger(file, brush_section_name,
+					"X", x, 10);
+				(void)IniFileAddInteger(file, brush_section_name,
+					"Y", y, 10);
+				hot_key[0] = tool_box->brushes[y][x]->hot_key;
+				(void)IniFileAddString(file, brush_section_name,
+					"HOT_KEY", hot_key);
+
+				switch(tool_box->brushes[y][x]->brush_type)
+				{
+				case BRUSH_TYPE_PENCIL:
+					WritePencilData(file, tool_box->brushes[y][x], brush_section_name);
+					break;
+				case BRUSH_TYPE_ERASER:
+					WriteEraserData(file, tool_box->brushes[y][x], brush_section_name);
+					break;
+				case BRUSH_TYPE_BUCKET:
+					WriteBucketData(file, tool_box->brushes[y][x], brush_section_name);
+					break;
+				case BRUSH_TYPE_BLEND_BRUSH:
+					WriteBlendBrushData(file, tool_box->brushes[y][x], brush_section_name);
+					break;
+				}
+
+				brush_id++;
+			}
+		}
+	}
+
+	WriteIniFileText(file, (int (*)(void*, const char*, ...))fprintf);
+	file->delete_func(file);
+	(void)fclose(fp);
 }
 
 #ifdef __cplusplus

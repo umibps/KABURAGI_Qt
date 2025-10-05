@@ -331,6 +331,26 @@ extern void ToolDummyFunction(
     struct _EVENT_STATE* state
 );
 
+/*
+* FromUTF8関数
+* UTF-8の文字列を指定されたコーディングの文字列に変換する
+* 引数
+* text			: UTF-8の文字列
+* text_coding	: 変換後のコーディング
+* 返り値
+*	変換後の文字列 (使用後にMEM_FREE_FUNC必要)
+*/
+EXTERN char* FromUTF8(const char* text, const char* text_coding);
+
+/*
+* ToUTF8関数
+* UTF-8の文字列へ指定されたコーディングの文字列から変換する
+* 引数
+* text			: 変換元の文字列
+* text_coding	: 変換元のコーディング
+*/
+EXTERN char* ToUTF8(const char* text, const char* text_coding);
+
 #ifdef _DEBUG
 EXTERN void WriteSurfacePngFile(const char* file_path, void* surface);
 #else

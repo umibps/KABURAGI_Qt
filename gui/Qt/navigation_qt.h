@@ -9,6 +9,8 @@
 #include "qt_widgets.h"
 #include "spin_scale_qt.h"
 
+class NavigationViewWidget;
+
 class NavigationViewWidget : public QWidget
 {
 	Q_OBJECT
@@ -35,6 +37,36 @@ private:
 	QImage *draw_canvas_image;
 };
 
+class NavigationZoomSelector : public SpinScale
+{
+	Q_OBJECT
+public:
+	NavigationZoomSelector(QWidget* parent = NULL, NavigationViewWidget* view = NULL,
+							APPLICATION* app = NULL, bool button_layout_vertical = true);
+	~NavigationZoomSelector();
+
+	virtual void valueChanged(int value);
+
+private:
+	APPLICATION *app;
+	NavigationViewWidget *view;
+};
+
+class NavigationRotateSelector : public SpinScale
+{
+	Q_OBJECT
+public:
+	NavigationRotateSelector(QWidget* parent = NULL, NavigationViewWidget* view= NULL,
+								APPLICATION* app = NULL, bool button_laytout_vertical = true);
+	~NavigationRotateSelector();
+
+	virtual void valueChanged(int value);
+
+private:
+	APPLICATION* app;
+	NavigationViewWidget* view;
+};
+
 class NavigationWindowWidget : public QDockWidget
 {
 	Q_OBJECT
@@ -47,14 +79,16 @@ public:
 	void setDrawCanvas(DRAW_WINDOW* canvas);
 	void paintCanvas(void* paint_event);
 	void paintScrollFrame(FLOAT_T x, FLOAT_T y, FLOAT_T width, FLOAT_T height,
-		void* display_context);
+			void* display_context);
+	void zoomResetButtonClicked();
+	void rotateResetButtonClicked();
 
 private:
 	NavigationViewWidget view;
 	QWidget vbox_widget;
 	QVBoxLayout vbox_layout;
-	SpinScale zoom_selector;
-	SpinScale rotate_selector;
+	NavigationZoomSelector zoom_selector;
+	NavigationRotateSelector rotate_selector;
 	QPushButton reset_zoom_button;
 	QPushButton reset_rotate_button;
 	APPLICATION *app;

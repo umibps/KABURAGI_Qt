@@ -55,14 +55,14 @@ QWidget* BlendBrushGUI::createDetailUI()
 	blend_target_group->setLayout(blend_target_layout);
 	BrushBlendTargetSelectorRadioButton *target_is_under_layer
 		= new BrushBlendTargetSelectorRadioButton(QString(app->labels->tool_box.select.under_layer),
-					vbox_widget, &brush->target, BLEND_BRUSH_TARGET_UNDER_LAYER);
+					vbox_widget, &brush->base_data.target, BLEND_BRUSH_TARGET_UNDER_LAYER);
 	blend_target_layout->addWidget(target_is_under_layer);
 	BrushBlendTargetSelectorRadioButton *target_is_canvas
 		= new BrushBlendTargetSelectorRadioButton(QString(app->labels->tool_box.select.canvas),
-					vbox_widget, &brush->target, BLEND_BRUSH_TARGET_CANVAS);
+					vbox_widget, &brush->base_data.target, BLEND_BRUSH_TARGET_CANVAS);
 	blend_target_layout->addWidget(target_is_canvas);
 	vbox->addWidget(blend_target_group);
-	if(brush->target == BLEND_BRUSH_TARGET_UNDER_LAYER)
+	if(brush->base_data.target == BLEND_BRUSH_TARGET_UNDER_LAYER)
 	{
 		target_is_under_layer->setChecked(true);
 	}
@@ -89,7 +89,7 @@ void BlendBrushGUI::blendTargetUnderLayer(bool state)
 	if(state)
 	{
 		BLEND_BRUSH* brush = (BLEND_BRUSH*)core;
-		brush->target = BLEND_BRUSH_TARGET_UNDER_LAYER;
+		brush->base_data.target = BLEND_BRUSH_TARGET_UNDER_LAYER;
 	}
 }
 
@@ -98,7 +98,7 @@ void BlendBrushGUI::blendTargetCanvas(bool state)
 	if(state)
 	{
 		BLEND_BRUSH* brush = (BLEND_BRUSH*)core;
-		brush->target = BLEND_BRUSH_TARGET_CANVAS;
+		brush->base_data.target = BLEND_BRUSH_TARGET_CANVAS;
 	}
 }
 

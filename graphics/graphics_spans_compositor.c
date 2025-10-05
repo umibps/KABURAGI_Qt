@@ -65,6 +65,10 @@ static GRAPHICS_SURFACE* GetClipSurface(
 	InitializeGraphicsPolygon(&polygon,&box,1);
 
 	clip_path = clip->path;
+	if(clip_path == NULL)
+	{
+		goto CLEANUP_POLYGON;
+	}
 	status = GraphicsPathFixedFillToPolygon(&clip_path->path,
 		clip_path->tolerance,&polygon);
 	if(UNLIKELY(status))
@@ -641,6 +645,10 @@ static eGRAPHICS_STATUS CompositeAlignedBoxexs(
 		if(need_clip_mask)
 		{
 			mask = GetClipSurface(compositor, dst, extents->clip, &extents->bounded);
+			if(mask == NULL)
+			{
+				return GRAPHICS_STATUS_INVALID;
+			}
 			if(UNLIKELY(mask->status))
 			{
 				return mask->status;

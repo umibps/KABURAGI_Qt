@@ -57,6 +57,16 @@ public:
 	QWidget* createDetailUI();
 };
 
+class BucketGUI : public BrushGUI_Base
+{
+public:
+	BucketGUI(BRUSH_CORE* core);
+
+	QWidget* createDetailUI();
+
+	void setExtend(int extend);
+};
+
 class BlendBrushGUI : public DefaultBrushGUI
 {
 public:

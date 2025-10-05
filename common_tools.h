@@ -74,6 +74,16 @@ extern void ColorPickerButtonPressCallback(
 
 extern void* ColorPickerGUI_New(APPLICATION* app, COMMON_TOOL_CORE* core);
 
+/*
+* LoadColorPickerDetailData関数
+* スポイトツールの設定データを読み取る
+* 引数
+* file			: 初期化ファイル読み取りデータ
+* section_name	: 初期化ファイルにスポイトが記録されているセクション名
+* app			: ツールの初期化にはアプリケーション管理用データが必要
+*/
+EXTERN COMMON_TOOL_CORE* LoadColorPickerDetailData(INI_FILE_PTR* file, const char* section_name, APPLICATION* app);
+
 extern void SetDefaultColorPickerCallbacks(APPLICATION* app);
 
 #ifdef __cplusplus

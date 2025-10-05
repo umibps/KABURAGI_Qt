@@ -193,9 +193,15 @@ void SpinScale::paintEvent(QPaintEvent* event)
 	QPainter(this).fillRect(fill_rectangle, fill_color);
 }
 
-void SpinScale::valueChanged(int value)
+void SpinScale::mousePressEvent(QMouseEvent* event)
 {
-	QSpinBox::valueChanged(value);
+	int before_value = value();
+	QSpinBox::mousePressEvent(event);
+	int current_value = value();
+	if(before_value != current_value)
+	{
+		emit valueChanged(current_value);
+	}
 }
 
 void SpinScale::setCaption(const char* caption)
@@ -239,7 +245,7 @@ void DoubleSpinScaleLineEdit::mousePressEvent(QMouseEvent* event)
 			scale->setValue(set_value);
 			mouse_grabbing = true;
 			scale->repaint();
-			scale->valueChanged(set_value);
+			emit scale->valueChanged(set_value);
 		}
 	}
 }
@@ -270,7 +276,7 @@ void DoubleSpinScaleLineEdit::mouseMoveEvent(QMouseEvent* event)
 		}
 		scale->setValue(set_value);
 		scale->repaint();
-		scale->valueChanged(set_value);
+		emit scale->valueChanged(set_value);
 	}
 }
 
@@ -395,9 +401,15 @@ void DoubleSpinScale::paintEvent(QPaintEvent* event)
 	QPainter(this).fillRect(fill_rectangle, fill_color);
 }
 
-void DoubleSpinScale::valueChanged(double value)
+void DoubleSpinScale::mousePressEvent(QMouseEvent* event)
 {
-	QDoubleSpinBox::valueChanged(value);
+	double before_value = value();
+	QDoubleSpinBox::mousePressEvent(event);
+	double current_value = value();
+	if(before_value != current_value)
+	{
+		emit valueChanged(current_value);
+	}
 }
 
 void DoubleSpinScale::setCaption(const char* caption)

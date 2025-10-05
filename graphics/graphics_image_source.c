@@ -1717,11 +1717,12 @@ GRAPHICS_SURFACE* GraphicsImageSourceCreateForPattern(
 
 	{
 		PIXEL_MANIPULATE_IMAGE *valid_image;
-		valid_image =
-		PixelManipulateImageForPattern ((GRAPHICS_IMAGE_SURFACE *)dst,
+		valid_image = PixelManipulateImageForPattern(
+			(GRAPHICS_IMAGE_SURFACE *)dst,
 			pattern, is_mask,
 			extents, sample,
-			src_x, src_y, &source->image, graphics);
+			src_x, src_y, &source->image, graphics
+		);
 		if(UNLIKELY(valid_image == NULL))
 		{
 			MEM_FREE_FUNC(source);

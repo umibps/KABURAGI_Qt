@@ -13,6 +13,7 @@
 void CanvasMainWidget::paintEvent(QPaintEvent* event)
 {
 	QPainter painter(this);
+	painter.setClipRegion(event->region());
 	
 	eDRAW_WINDOW_DIPSLAY_UPDATE_RESULT result =
 		LayerBlendForDisplay(canvas);

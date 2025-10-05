@@ -44,6 +44,8 @@ private slots:
 	void updateCanvas();
 	void changeCurrentDevice(bool is_stylus);
 
+	bool eventFilter(QObject* object, QEvent* event);
+
 private:
 	QWidget canvas_widget;
 	QTimer update_timer;

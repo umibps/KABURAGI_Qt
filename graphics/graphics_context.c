@@ -575,7 +575,7 @@ static eGRAPHICS_STATUS GraphicsDefaultContextMoveTo(void* abstract_context, FLO
 	x_fixed = GraphicsFixedFromFloat(x);
 	y_fixed = GraphicsFixedFromFloat(y);
 
-	return GraphicsPathFixedMoveTo(&context->path, x, y);
+	return GraphicsPathFixedMoveTo(&context->path, x_fixed, y_fixed);
 }
 
 static eGRAPHICS_STATUS GraphicsDefaultContextRelativeMoveTo(void* abstract_context, FLOAT_T dx, FLOAT_T dy)
@@ -868,8 +868,12 @@ static eGRAPHICS_STATUS GraphicsDefaultContextAppendPath(void* abstract_context,
 static eGRAPHICS_STATUS GraphicsDefaultContextPaint(void* abstract_context)
 {
 	GRAPHICS_DEFAULT_CONTEXT *context = (GRAPHICS_DEFAULT_CONTEXT*)abstract_context;
+	eGRAPHICS_STATUS status;
 
-	return GraphicsStatePaint(context->state);
+	status = GraphicsStatePaint(context->state);
+	context->state->source = &context->base.graphics->nil_pattern;
+
+	return status;
 }
 
 static eGRAPHICS_STATUS GraphicsDefaultContextPaintWithAlpha(void* abstract_context, FLOAT_T alpha)
@@ -895,14 +899,20 @@ static eGRAPHICS_STATUS GraphicsDefaultContextPaintWithAlpha(void* abstract_cont
 	status = GraphicsStateMask(context->state, &pattern.base);
 	GraphicsPatternFinish(&pattern.base);
 
+	context->state->source = &context->base.graphics->nil_pattern;
+
 	return status;
 }
 
 static eGRAPHICS_STATUS GraphicsDefaultContextMask(void* abstract_context, GRAPHICS_PATTERN* mask)
 {
 	GRAPHICS_DEFAULT_CONTEXT *context = (GRAPHICS_DEFAULT_CONTEXT*)abstract_context;
+	eGRAPHICS_STATUS status;
 
-	return GraphicsStateMask(context->state, mask);
+	status = GraphicsStateMask(context->state, mask);
+	context->state->source = &context->base.graphics->nil_pattern;
+
+	return status;
 }
 
 static eGRAPHICS_STATUS GraphicsDefaultContextStroke(void* abstract_context)

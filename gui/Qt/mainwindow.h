@@ -22,6 +22,8 @@ public:
 
 	QTabWidget* GetCanvasTabWidget(void);
 
+	void closeEvent(QCloseEvent* event) override;
+
 private:
 	APPLICATION *app;
 

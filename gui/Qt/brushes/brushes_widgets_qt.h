@@ -17,7 +17,7 @@ public:
 		BrushGUI_Base* brush = NULL,
 		bool button_layout_vertical = true
 	);
-	void valueChanged(double val);
+	void scaleChanged(double val);
 	BrushGUI_Base* brushGUI();
 private:
 	BrushGUI_Base *brush;

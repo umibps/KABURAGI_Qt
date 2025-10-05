@@ -74,11 +74,13 @@ typedef int (*seek_func_t)(void*, long, int);
 
 typedef struct _LAYER LAYER;
 typedef struct _DRAW_WINDOW DRAW_WINDOW;
+typedef struct _TOOL_BOX TOOL_BOX;
 typedef struct _APPLICATION APPLICATION;
 typedef struct _TOOL_WINDOW_WIDGETS TOOL_WINDOW_WIDGETS;
 typedef struct _LAYER_VIEW_WIDGETS LAYER_VIEW_WIDGETS;
 typedef struct _NAVIGATION_WIDGETS NAVIGATION_WIDGETS;
 typedef struct _BRUSH_CORE BRUSH_CORE;
+typedef struct _GENERAL_BRUSH GENERAL_BRUSH;
 typedef struct _COMMON_TOOL_CORE COMMON_TOOL_CORE;
 typedef struct _UPDATE_RECTANGLE UPDATE_RECTANGLE;
 

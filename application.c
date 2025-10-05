@@ -1,5 +1,7 @@
 #include "application.h"
+#include "tool_box.h"
 #include "ini_file.h"
+#include "configure.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -63,6 +65,18 @@ int ReadInitializeFile(APPLICATION* app, const char* file_path)
 	(void)fclose(fp);
 	
 	return 0;
+}
+
+/*
+* WriteApplicationSettingFiles関数
+* 設定ファイルを書き込む
+* 引数
+* app	: アプリケーションを管理する構造体のアドレス
+*/
+void WriteApplicationSettingFiles(APPLICATION* app)
+{
+	WriteToolBoxData(app, COMMON_TOOL_INITIALIZE_FILE_PATH, BRUSH_INITIALIZE_FILE_PATH,
+		VECTOR_BRUSH_INITIALIZE_FILE_PATH);
 }
 
 #ifdef __cplusplus

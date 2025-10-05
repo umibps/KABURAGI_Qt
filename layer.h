@@ -177,6 +177,20 @@ extern void SetLayerMaskUnder(APPLICATION* app, int mask);
 EXTERN void SetLayerBlendFunctionsArray(void (*layer_blend_functions[])(LAYER* src, LAYER* dst));
 EXTERN void SetPartLayerBlendFunctionsArray(void (*layer_part_blend_functions[])(LAYER* src, LAYER* dst, UPDATE_RECTANGLE* update));
 
+/*
+* ResizeLayerBuffer関数
+* レイヤーの幅、高さの情報を変更する
+* 引数
+* target		: サイズを変更するレイヤー
+* new_width		: 新しいレイヤーの幅
+* new_height	: 新しいレイヤーの高さ
+*/
+EXTERN void ResizeLayerBuffer(
+	LAYER* target,
+	int32 new_width,
+	int32 new_height
+);
+
 #ifdef __cplusplus
 }
 #endif

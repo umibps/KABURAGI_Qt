@@ -20,7 +20,8 @@ BrushButton::BrushButton(
 	name = text;
 
 	QString path = QDir().absolutePath();
-	if(pixmap.isNull() && QDir(image_file_path).isAbsolute() == false)
+	const QChar *path_data = image_file_path.data();
+	if(pixmap.isNull() && QDir(image_file_path).isAbsolute() == false && path_data->unicode() != '\0')
 	{
 		QString absolute_path;
 		if(image_file_path.data()[0] == '.')

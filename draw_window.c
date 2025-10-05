@@ -4,7 +4,9 @@
 #include <math.h>
 #include "draw_window.h"
 #include "application.h"
+#include "graphics/graphics_matrix.h"
 #include "gui/gui.h"
+#include "gui/draw_window.h"
 #include "memory.h"
 
 #ifdef __cplusplus
@@ -49,7 +51,7 @@ DRAW_WINDOW* CreateDrawWindow(
 
 	// 背景のピクセルメモリを確保
 	ret->back_ground = (uint8*)MEM_CALLOC_FUNC(ret->pixel_buf_size, sizeof(uint8));
-	(void)memset(ret->back_ground, 0xff, sizeof(*ret->back_ground)*ret->pixel_buf_size);
+	(void)memset(ret->back_ground, 0xFF, sizeof(*ret->back_ground)*ret->pixel_buf_size);
 	// ブラシ用のバッファを確保
 	ret->brush_buffer = (uint8*)MEM_CALLOC_FUNC(ret->pixel_buf_size, sizeof(uint8));
 	// 不透明保護用のバッファを確保
@@ -127,50 +129,9 @@ DRAW_WINDOW* CreateDrawWindow(
 	ret->part_layer_blend_functions = app->part_layer_blend_functions;
 	ret->blend_selection_functions = app->blend_selection_functions;
 	
-	ResizeDispTemp(ret, width, height);
+	ResizeCanvasDispTempLayer(ret, width, height);
 
 	return ret;
-}
-
-/***************************************
-* ResizeDispTemp関数				   *
-* 表示用の一時保存のバッファを変更	 *
-* 引数								 *
-* window		: 描画領域の情報	   *
-* new_width		: 描画領域の新しい幅   *
-* new_height	: 描画領域の新しい高さ *
-***************************************/
-void ResizeDispTemp(
-	DRAW_WINDOW* window,
-	int32 new_width,
-	int32 new_height
-)
-{
-	window->disp_size = (int)(2 * sqrt((FLOAT_T)((new_width/2)*(new_width/2)+(new_height/2)*(new_height/2))) + 1);
-	window->disp_stride = window->disp_size * 4;
-	window->half_size = window->disp_size * 0.5;
-	window->trans_x = - window->half_size + ((new_width / 2) * window->cos_value + (new_height / 2) * window->sin_value);
-	window->trans_y = - window->half_size - ((new_width / 2) * window->sin_value - (new_height / 2) * window->cos_value);
-
-	window->add_cursor_x = - (window->half_size - window->disp_layer->width / 2) + window->half_size;
-	window->add_cursor_y = - (window->half_size - window->disp_layer->height / 2) + window->half_size;
-	window->rev_add_cursor_x = window->disp_layer->width/2 + (window->half_size - window->disp_layer->width/2);
-	window->rev_add_cursor_y = window->disp_layer->height/2 + (window->half_size - window->disp_layer->height/2);
-
-	ReleaseLayerContext(window->disp_temp);
-
-	window->disp_temp->width = new_width;
-	window->disp_temp->height = new_height;
-	window->disp_temp->stride = new_width * window->disp_temp->channel;
-
-	window->disp_temp->pixels = (uint8*)MEM_REALLOC_FUNC(window->disp_temp->pixels,
-		window->disp_stride * window->disp_size);
-	InitializeLayerContext(window->disp_temp);
-
-	ReleaseCanvasContext(window);
-	InitializeCanvasContext(window);
-
-	//UpdateDrawWindowClippingArea(window);
 }
 
 INLINE LAYER* SearchLayeByCursorColorSkipLayerSet(LAYER* layer_set)
@@ -498,6 +459,134 @@ void ExecuteMotionQueue(DRAW_WINDOW* canvas)
 	//canvas->before_cursor_y = display_before_y;
 
 	DeleteTimer(timer);
+}
+
+/*
+* ResizeCanvasDispTempLayer関数
+* 表示用の一時保存レイヤーの幅、高さを変更
+* canvas		: サイズを変更するキャンバス
+* new_width		: キャンバスの新しい幅
+* new_height	: キャンバスの新しい高さ
+*/
+void ResizeCanvasDispTempLayer(
+	DRAW_WINDOW* canvas,
+	int32 new_width,
+	int32 new_height
+)
+{
+	APPLICATION *app = canvas->app;
+	GRAPHICS_MATRIX matrix;
+	const GRAPHICS_DEFAULT_CONTEXT zero_context = {0};
+	const GRAPHICS_IMAGE_SURFACE zero_surface = {0};
+
+	canvas->disp_size = (int)(2 * sqrt((new_width/2)*(new_width/2)
+								+ (new_height/2)*(new_height/2)) + 1);
+	canvas->disp_stride = canvas->disp_size * 4;
+	canvas->half_size = canvas->disp_size * 0.5;
+	canvas->trans_x = - canvas->half_size + ((new_width / 2) * canvas->cos_value
+						+ (new_height / 2) * canvas->sin_value);
+	canvas->trans_y = - canvas->half_size - ((new_width / 2) * canvas->sin_value
+						- (new_height / 2) * canvas->cos_value);
+
+	canvas->add_cursor_x = - (canvas->half_size - canvas->disp_layer->width / 2) + canvas->half_size;
+	canvas->add_cursor_y = - (canvas->half_size - canvas->disp_layer->height / 2) + canvas->half_size;
+	canvas->rev_add_cursor_x = canvas->disp_layer->width / 2 + (canvas->half_size - canvas->disp_layer->width / 2);
+	canvas->rev_add_cursor_y = canvas->disp_layer->height / 2 + (canvas->half_size - canvas->disp_layer->height / 2);
+
+	ReleaseLayerContext(canvas->disp_temp);
+
+	GraphicsDefaultContextFinish(&canvas->disp_temp->context);
+	canvas->disp_temp->context = zero_context;
+	GraphicsSurfaceFinish(&canvas->disp_temp->surface.base);
+	canvas->disp_temp->surface = zero_surface;
+
+	canvas->disp_temp->width = new_width;
+	canvas->disp_temp->height = new_height;
+	canvas->disp_temp->stride = new_width * 4;
+
+	canvas->disp_temp->pixels = (uint8*)MEM_REALLOC_FUNC(canvas->disp_temp->pixels,
+				canvas->disp_stride * canvas->disp_size);
+	InitializeGraphicsImageSurfaceForData(&canvas->disp_temp->surface, canvas->disp_temp->pixels,
+				GRAPHICS_FORMAT_ARGB32, new_width, new_height, canvas->disp_temp->stride, &app->graphics);
+	InitializeGraphicsDefaultContext(&canvas->disp_temp->context, &canvas->disp_temp->surface, &app->graphics);
+
+	InitializeGraphicsMatrixRotate(&matrix, canvas->angle);
+	GraphicsMatrixTranslate(&matrix, canvas->trans_x, canvas->trans_y);
+
+	InitializeLayerContext(canvas->disp_temp);
+
+	ReleaseCanvasContext(canvas);
+	InitializeCanvasContext(canvas);
+}
+
+/*
+* DrawWindowChangeZoom関数
+* キャンバスの表示拡大縮小率を変更する
+* 引数
+* canvas	: 拡大縮小率を変更するキャンバス
+* zoom		: 変更後の拡大縮小率
+*/
+void DrawWindowChangeZoom(DRAW_WINDOW* canvas, int16 zoom)
+{
+	// レイヤー合成時の表示用拡大縮小設定を更新
+	GRAPHICS_MATRIX matrix;
+	InitializeGraphicsMatrixScale(&matrix, 1/(zoom*0.01), 1/(zoom*0.01));
+	GraphicsPatternSetMatrix(&canvas->mixed_pattern.base, &matrix);
+
+	// キャンバスの拡大縮小率設定を更新
+	canvas->zoom = zoom;
+	canvas->zoom_rate = zoom * 0.01;
+	canvas->rev_zoom = 1 / canvas->zoom_rate;
+
+	// 表示に使うレイヤーの幅、高さ情報を更新
+	ResizeLayerBuffer(canvas->disp_layer,
+		(int32)(canvas->width*canvas->zoom_rate), (int32)(canvas->height*canvas->zoom_rate));
+	ResizeLayerBuffer(canvas->scaled_mixed,
+		(int32)(canvas->width * canvas->zoom_rate), (int32)(canvas->height * canvas->zoom_rate));
+	ResizeLayerBuffer(canvas->effect,
+		(int32)(canvas->width * canvas->zoom_rate), (int32)(canvas->height * canvas->zoom_rate));
+	ResizeCanvasDispTempLayer(canvas,
+		(int32)(canvas->width*canvas->zoom_rate), (int32)(canvas->height*canvas->zoom_rate));
+
+	ResizeDrawWindowWidgets(canvas);
+
+	canvas->flags |= DRAW_WINDOW_UPDATE_ACTIVE_UNDER;
+
+	if(canvas->flags & DRAW_WINDOW_HAS_SELECTION_AREA)
+	{
+		UpdateSelectionArea(&canvas->selection_area, canvas->selection, canvas->disp_temp);
+	}
+
+	UpdateCanvasWidget(canvas->widgets);
+}
+
+/*
+* DrawWindowChangeRotate関数
+* キャンバスの表示回転角を変更する
+* 引数
+* canvas	: 回転角を変更するキャンバス
+* angle		: 新しい表示回転角(°)
+*/
+void DrawWindowChangeRotate(DRAW_WINDOW* canvas, int angle)
+{
+	GRAPHICS_MATRIX matrix;
+	FLOAT_T radian;
+
+	radian = canvas->angle = - (FLOAT_T)angle * M_PI / 180.0;
+
+	// キャンバスの回転角記録メモリを更新
+	canvas->sin_value = sin(radian);
+	canvas->cos_value = cos(radian);
+
+	canvas->trans_x = -canvas->half_size + ((canvas->disp_layer->width / 2) * canvas->cos_value + (canvas->disp_layer->height / 2) * canvas->sin_value);
+	canvas->trans_y = -canvas->half_size - ((canvas->disp_layer->width / 2) * canvas->sin_value - (canvas->disp_layer->height / 2) * canvas->cos_value);
+
+	canvas->add_cursor_x = -(canvas->half_size - canvas->disp_layer->width / 2) + canvas->half_size;
+	canvas->add_cursor_y = -(canvas->half_size - canvas->disp_layer->height / 2) + canvas->half_size;
+
+	InitializeGraphicsMatrixRotate(&matrix, radian);
+	GraphicsMatrixTranslate(&matrix, canvas->trans_x, canvas->trans_y);
+	GraphicsPatternSetMatrix(&canvas->mixed_pattern.base, &matrix);
 }
 
 #ifdef __cplusplus

@@ -5,6 +5,7 @@
 #include "../anti_alias.h"
 #include "../graphics/graphics_surface.h"
 #include "../graphics/graphics_matrix.h"
+#include "../gui/brushes_gui.h"
 
 #ifdef _OPENMP
 # include <omp.h>
@@ -977,6 +978,53 @@ void EraserReleaseCallBack(
 
 		canvas->work_layer->layer_mode = LAYER_BLEND_NORMAL;
 	}
+}
+
+/*
+* LoadEraserData関数
+* 消しゴムツールの設定データを読み取る
+* 引数
+* file			: 初期化ファイル読み取りデータ
+* section_name	: 初期化ファイルに鉛筆が記録されてるセクション名
+* app			: ブラシ初期化にはアプリケーション管理用データが必要
+* 返り値
+*	消しゴムデータ 使用終了後にMEM_FREE_FUNC必要
+*/
+BRUSH_CORE* LoadEraserData(INI_FILE_PTR file, const char* section_name, APPLICATION* app)
+{
+	ERASER *eraser = (ERASER*)MEM_CALLOC_FUNC(1, sizeof(*eraser));
+
+	InitializeBrushCore(&eraser->core, app);
+	LoadDefaultBrushData(&eraser->core, file, section_name, app);
+
+	eraser->core.color = &app->tool_box.color_chooser.rgb;
+	eraser->core.back_color = &app->tool_box.color_chooser.back_rgb;
+
+	eraser->core.brush_type = BRUSH_TYPE_ERASER;
+	eraser->core.press_function = EraserPressCallBack;
+	eraser->core.motion_function = EraserMotionCallBack;
+	eraser->core.release_function = EraserReleaseCallBack;
+	eraser->core.draw_cursor = EraserDrawCursor;
+	eraser->core.brush_data = EraserGUI_New(app, &eraser->core);
+	eraser->core.create_detail_ui = CreateEraserDetailUI;
+	eraser->core.button_update = EraserButtonUpdate;
+	eraser->core.motion_update = EraserMotionUpdate;
+	eraser->core.change_zoom = EraserChangeZoom;
+
+	return &eraser->core;
+}
+
+/*
+* WriteEraserData関数
+* 消しゴムツールの設定データを記録する
+* 引数
+* file			: 書き込みファイル操作用データ
+* core			: 記録するツールデータ
+* section_name	: 記録するセクション名
+*/
+void WriteEraserData(INI_FILE_PTR file, BRUSH_CORE* core, const char* section_name)
+{
+	WriteDefaultBrushData(core, file, section_name, "ERASER");
 }
 
 #ifdef __cplusplus

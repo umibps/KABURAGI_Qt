@@ -5,6 +5,7 @@
 #include "../anti_alias.h"
 #include "../graphics/graphics_surface.h"
 #include "../graphics/graphics_matrix.h"
+#include "../gui/brushes_gui.h"
 
 #ifdef _OPENMP
 # include <omp.h>
@@ -1018,6 +1019,51 @@ void PencilEditSelectionReleaseCallBack(
 		GraphicsSurfaceFinish(&canvas->update.surface.base);
 		GraphicsDefaultContextFinish(&canvas->update.context);
 	}
+}
+
+/*
+* LoadPencilData関数
+* 鉛筆ツールの設定データを読み取る
+* 引数
+* file			: 初期化ファイル読み取りデータ
+* section_name	: 初期化ファイルに鉛筆が記録されてるセクション名
+* app			: ブラシ初期化にはアプリケーション管理用データが必要
+* 返り値
+*	鉛筆ツールデータ 使用終了後にMEM_FREE_FUNC必要
+*/
+BRUSH_CORE* LoadPencilData(INI_FILE_PTR file, const char* section_name, APPLICATION* app)
+{
+	PENCIL *pencil = (PENCIL*)MEM_CALLOC_FUNC(1, sizeof(*pencil));
+
+	InitializeBrushCore(&pencil->core, app);
+	LoadDefaultBrushData(&pencil->core, file, section_name, app);
+
+	pencil->core.brush_type = BRUSH_TYPE_PENCIL;
+	pencil->core.press_function = PencilPressCallBack;
+	pencil->core.motion_function = PencilMotionCallBack;
+	pencil->core.release_function = PencilReleaseCallBack;
+	pencil->core.draw_cursor = PencilDrawCursor;
+	pencil->core.brush_data = PencilGUI_New(app, &pencil->core);
+	pencil->core.create_detail_ui = CreatePencilDetailUI;
+	pencil->core.button_update = PencilButtonUpdate;
+	pencil->core.motion_update = PencilMotionUpdate;
+	pencil->core.change_zoom = PencilChangeZoom;
+	pencil->core.change_color = PcncilChangeColor;
+
+	return &pencil->core;
+}
+
+/*
+* WritePencilData関数
+* 鉛筆ツールの設定データを記録する
+* 引数
+* file			: 書き込みファイル操作用データ
+* core			: 記録するツールデータ
+* section_name	: 記録するセクション名
+*/
+void WritePencilData(INI_FILE_PTR file, BRUSH_CORE* core, const char* section_name)
+{
+	WriteDefaultBrushData(core, file, section_name, "PENCIL");
 }
 
 #ifdef __cplusplus

@@ -8,20 +8,24 @@ BrushScaleSelector::BrushScaleSelector(
 	QString caption,
 	BrushGUI_Base* brush,
 	bool button_layout_vertical
-)   : DoubleSpinScale(parent, caption, button_layout_vertical)
+)	: DoubleSpinScale(parent, caption, button_layout_vertical)
 {
 	this->brush = brush;
+	setDecimals(1);
 	if(brush != NULL)
 	{
 		BRUSH_CORE *core = brush->brushCore();
 		if(core != NULL)
-		this->setValue(core->radius * 2);
+		{
+			this->setValue(core->radius * 2);
+		}
 	}
+
+	connect(this, &DoubleSpinScale::valueChanged, this, &BrushScaleSelector::scaleChanged);
 }
 
-void BrushScaleSelector::valueChanged(double val)
+void BrushScaleSelector::scaleChanged(double val)
 {
-	emit DoubleSpinScale::valueChanged(val);
 	brush->brushScaleChanged(val);
 }
 
@@ -76,9 +80,10 @@ BrushOpacitySelector::BrushOpacitySelector(
 	QString caption,
 	BrushGUI_Base* brush,
 	bool button_layout_vertical
-)   : DoubleSpinScale(parent, caption, button_layout_vertical)
+)	: DoubleSpinScale(parent, caption, button_layout_vertical)
 {
 	this->brush = brush;
+	setDecimals(1);
 }
 
 void BrushOpacitySelector::valueChanged(double val)
@@ -92,9 +97,10 @@ BrushOutlineHardnessSelector::BrushOutlineHardnessSelector(
 	QString caption,
 	BrushGUI_Base* brush,
 	bool button_layout_vertical
-)   : DoubleSpinScale(parent, caption, button_layout_vertical)
+)	: DoubleSpinScale(parent, caption, button_layout_vertical)
 {
 	this->brush = brush;
+	setDecimals(1);
 }
 
 void BrushOutlineHardnessSelector::valueChanged(double val)
@@ -108,9 +114,10 @@ BrushBlurSelector::BrushBlurSelector(
 	QString caption,
 	BrushGUI_Base* brush,
 	bool button_layout_vertical
-)   : DoubleSpinScale(parent, caption, button_layout_vertical)
+)	: DoubleSpinScale(parent, caption, button_layout_vertical)
 {
 	this->brush = brush;
+	setDecimals(1);
 }
 
 void BrushBlurSelector::valueChanged(double val)
@@ -142,7 +149,7 @@ BrushPressureSizeCheckBox::BrushPressureSizeCheckBox(
 	QWidget* parent,
 	const char* label,
 	BrushGUI_Base* brush
-)   : QCheckBox(label, parent)
+)	: QCheckBox(label, parent)
 {
 	this->brush = brush;
 }

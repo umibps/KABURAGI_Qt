@@ -61,9 +61,27 @@ DRAW_WINDOW_WIDGETS_PTR CreateDrawWindowWidgets(void* application, DRAW_WINDOW* 
 
 	ret->window = new CanvasWidget(app->widgets->main_window->GetCanvasTabWidget(), canvas);
 	ret->display_image = new QImage(canvas->disp_layer->pixels, canvas->disp_layer->width,
-									canvas->disp_layer->height, canvas->disp_layer->stride, QImage::Format_RGBA8888);
+									canvas->disp_layer->height, canvas->disp_layer->stride, QImage::Format_ARGB32);
 
 	return ret;
+}
+
+void ReleaseDrawWindowWidget(DRAW_WINDOW_WIDGETS* widgets)
+{
+	delete widgets->display_image;
+	delete widgets->window;
+
+	MEM_FREE_FUNC(widgets);
+}
+
+void ResizeDrawWindowWidgets(DRAW_WINDOW* canvas)
+{
+	canvas->widgets->window->canvas_widget()->resize(canvas->disp_size, canvas->disp_size);
+	delete canvas->widgets->display_image;
+	canvas->widgets->display_image = new QImage(canvas->disp_layer->pixels, canvas->disp_layer->width,
+		canvas->disp_layer->height, canvas->disp_layer->stride, QImage::Format_RGBA8888);
+	canvas->widgets->window->canvas_widget()->setFixedSize(canvas->disp_size, canvas->disp_size);
+	canvas->widgets->window->canvas_widget()->setMinimumSize(canvas->disp_size, canvas->disp_size);
 }
 
 CanvasMainWidget* CanvasWidget::canvas_widget()
@@ -75,7 +93,12 @@ CanvasMainWidget::CanvasMainWidget(QWidget* parent, DRAW_WINDOW* canvas)
 	: QWidget(parent),
 	  update_timer(this)
 {
+	setAttribute(Qt::WA_StaticContents);
+
 	unsigned int widget_size;
+
+	pop_up_menu_mode = COLOR_HISTORY;
+	stylus_device = false;
 
 	if(canvas != NULL)
 	{
@@ -154,6 +177,16 @@ void CanvasMainWidget::colorPickerPopupMenuClicked(int row, int column)
 	app->tool_box.color_chooser.rgb[0] = app->tool_box.color_chooser.color_history[0][0];
 	app->tool_box.color_chooser.rgb[1] = app->tool_box.color_chooser.color_history[0][1];
 	app->tool_box.color_chooser.rgb[2] = app->tool_box.color_chooser.color_history[0][2];
+}
+
+bool CanvasMainWidget::eventFilter(QObject* object, QEvent* event)
+{
+	if(object == this && event->type() == QEvent::MouseMove) {
+		QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
+		// マウスカーソルの移動に合わせて処理
+		return true; // イベントを消費
+	}
+	return false;
 }
 
 CanvasWidget::CanvasWidget(QWidget* parent, DRAW_WINDOW* canvas)

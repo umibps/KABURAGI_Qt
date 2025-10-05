@@ -836,6 +836,42 @@ void AddDeleteLayerHistory(DRAW_WINDOW* canvas, LAYER* target)
 	DeleteMemoryStream(history_data);
 }
 
+/*
+* ResizeLayerBuffer関数
+* レイヤーの幅、高さの情報を変更する
+* 引数
+* target		: サイズを変更するレイヤー
+* new_width		: 新しいレイヤーの幅
+* new_height	: 新しいレイヤーの高さ
+*/
+void ResizeLayerBuffer(
+	LAYER* target,
+	int32 new_width,
+	int32 new_height
+)
+{
+	APPLICATION *app = target->window->app;
+
+	const GRAPHICS_DEFAULT_CONTEXT zero_context = {0};
+	const GRAPHICS_IMAGE_SURFACE zero_surface = {0};
+
+	target->width = new_width;
+	target->height = new_height;
+	target->stride = new_width * 4;
+
+	// ピクセルデータ、サーフェースのサイズ変更
+	GraphicsDefaultContextFinish(&target->context);
+	target->context = zero_context;
+	GraphicsSurfaceFinish(&target->surface.base);
+	target->surface = zero_surface;
+
+	target->pixels = (uint8*)MEM_REALLOC_FUNC(target->pixels,
+								target->stride * target->height);
+	InitializeGraphicsImageSurfaceForData(&target->surface, target->pixels,
+					GRAPHICS_FORMAT_ARGB32, target->width, target->height ,target->stride, &app->graphics);
+	InitializeGraphicsDefaultContext(&target->context, &target->surface, &app->graphics);
+}
+
 #ifdef __cplusplus
 }
 #endif

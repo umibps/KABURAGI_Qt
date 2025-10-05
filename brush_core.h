@@ -21,6 +21,7 @@ extern "C" {
 #define MINIMUM_BRUSH_DISTANCE 0.25
 #define BRUSH_UPDATE_MARGIN 7
 #define BRUSH_MAXIMUM_CIRCLE_SIZE (500)
+#define BRUSH_POINT_BUFFER_SIZE 256
 
 typedef enum _eBRUSH_SHAPE
 {
@@ -134,6 +135,28 @@ struct _BRUSH_CORE
 	void *button;
 };
 
+typedef struct _GENERAL_BRUSH
+{
+	BRUSH_CORE core;
+
+	uint16 blend_mode;
+	int target;
+
+	FLOAT_T points[BRUSH_POINT_BUFFER_SIZE][4];
+	FLOAT_T sum_distance, travel;
+	FLOAT_T finish_length;
+	FLOAT_T draw_start;
+	FLOAT_T enter_length;
+	FLOAT_T enter_size;
+	FLOAT_T enter, out;
+	int num_point;
+	int draw_finished;
+	int reference_point;
+	int8 channel;
+	uint8 shape;
+	uint8 brush_mode;
+} GENERAL_BRUSH;
+
 typedef struct _BRUSH_UPDATE_AREA
 {
 	// 更新を行う範囲
@@ -210,6 +233,23 @@ EXTERN void BrushCoreSetGrayCirclePattern(
 	FLOAT_T alpha
 );
 
+EXTERN void DummyMouseCallBack(
+	DRAW_WINDOW* canvas,
+	BRUSH_CORE* core,
+	EVENT_STATE* state
+);
+
+EXTERN void DummyBrushDrawCursor(
+	DRAW_WINDOW* canvas,
+	FLOAT_T x,
+	FLOAT_T y,
+	BRUSH_CORE* core
+);
+
+EXTERN void DummyBrushButton_or_Move_Update(DRAW_WINDOW* canvas, FLOAT_T x, FLOAT_T y, BRUSH_CORE* core);
+
+EXTERN void DummyBrushChangeZoom(FLOAT_T zoom, BRUSH_CORE* core);
+
 EXTERN void DefaultBrushDrawCursor(
 	DRAW_WINDOW* canvas,
 	FLOAT_T x,
@@ -224,6 +264,19 @@ EXTERN void DefaultBrushMotionUpdate(DRAW_WINDOW* canvas, FLOAT_T x, FLOAT_T y, 
 EXTERN void DefaultBrushChangeZoom(FLOAT_T zoom, BRUSH_CORE* core);
 
 EXTERN void DefaultBrushChangeColor(const uint8* color, void* data);
+
+EXTERN void WithoutShapeBrushDrawCursor(
+	DRAW_WINDOW* canvas,
+	FLOAT_T x,
+	FLOAT_T y,
+	BRUSH_CORE* core
+);
+
+EXTERN void WithoutShapeBrushButtonUpdate(DRAW_WINDOW* canvas, FLOAT_T x, FLOAT_T y, BRUSH_CORE* core);
+
+EXTERN void WithoutShapeBrushMotionUpdate(DRAW_WINDOW* canvas, FLOAT_T x, FLOAT_T y, BRUSH_CORE* core);
+
+EXTERN void WithoutShapeBrushChangeZoom(FLOAT_T zoom, BRUSH_CORE* core);
 
 EXTERN void EditSelectionUndoRedo(DRAW_WINDOW* canvas, void* p);
 

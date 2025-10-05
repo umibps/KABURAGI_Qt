@@ -346,7 +346,7 @@ extern void PixelManipulateRegion32Translate(PIXEL_MANIPULATE_REGION32* region, 
 static INLINE void InitializePixelManipulateRegion32(PIXEL_MANIPULATE_REGION32* region)
 {
 	region->extents.x1 = region->extents.y1
-		= region->extents.y1 = region->extents.y2 = 0;
+		= region->extents.x2 = region->extents.y2 = 0;
 	region->data = region->data_embedded;
 	region->data->size = 0;
 	region->data->num_rects = 0;

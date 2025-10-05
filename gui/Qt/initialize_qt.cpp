@@ -51,7 +51,8 @@ void InitializeApplication(APPLICATION* app, char** argv, int argc, char* init_f
 	app->tool_box.active_vector_brush[1] = app->tool_box.vector_brushes[0][0];
 
 	(void)ReadCommonToolInitializeFile(app, app->common_tool_file_path);
-	(void)ReadBrushInitializeFile(app, app->brush_file_path);
+	//(void)ReadBrushInitializeFile(app, app->brush_file_path);
+	(void)ReadBrushInitializeFile(app, BRUSH_INITIALIZE_FILE_PATH);
 
 	SetDefaultColorPickerCallbacks(app);
 
@@ -101,7 +102,7 @@ void InitializeApplication(APPLICATION* app, char** argv, int argc, char* init_f
 
 	BrushButton *button =
 		(BrushButton*)app->tool_box.active_brush[INPUT_PEN]->button;
-	button->click();
+	button->setChecked(true);
 	app->tool_box.active_brush[INPUT_PEN]->create_detail_ui(app, app->tool_box.active_brush[INPUT_PEN]);
 	app->tool_box.flags |= TOOL_USING_BRUSH;
 

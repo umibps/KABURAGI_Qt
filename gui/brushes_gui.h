@@ -12,9 +12,11 @@ extern void CreateDefaultBrushDetailUI(APPLICATION* app, BRUSH_CORE* core);
 extern void* PencilGUI_New(APPLICATION* app, BRUSH_CORE* core);
 extern void* EraserGUI_New(APPLICATION* app, BRUSH_CORE* core);
 extern void* BlendBrushGUI_New(APPLICATION* app, BRUSH_CORE* core);
+extern void* BucketGUI_New(APPLICATION* app, BRUSH_CORE* core);
 
 #define CreatePencilDetailUI CreateDefaultBrushDetailUI
 #define CreateEraserDetailUI CreateDefaultBrushDetailUI
+#define CreateBucketDetailUI CreateDefaultBrushDetailUI
 #define CreateBlendBrushDetailUI CreateDefaultBrushDetailUI
 
 #ifdef __cplusplus

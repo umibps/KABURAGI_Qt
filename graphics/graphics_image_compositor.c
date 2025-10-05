@@ -3097,8 +3097,10 @@ static eGRAPHICS_INTEGER_STATUS inplace_renderer_init(
 
 	graphics = dst->base.graphics;
 
-	if (composite->mask_pattern.base.type != GRAPHICS_PATTERN_TYPE_SOLID)
+	if(composite->mask_pattern.base.type != GRAPHICS_PATTERN_TYPE_SOLID)
+	{
 		return GRAPHICS_INTEGER_STATUS_UNSUPPORTED;
+	}
 
 	r->base.render_rows = NULL;
 	r->bpp = composite->mask_pattern.solid.color.alpha_short >> 8;
@@ -3108,10 +3110,12 @@ static eGRAPHICS_INTEGER_STATUS inplace_renderer_init(
 		const GRAPHICS_COLOR *color;
 
 		color = &composite->source_pattern.solid.color;
-		if (composite->op == GRAPHICS_OPERATOR_CLEAR)
+		if(composite->op == GRAPHICS_OPERATOR_CLEAR)
+		{
 			color = &graphics->color_transparent;
+		}
 
-		if (fill_reduces_to_source (composite->op, color, dst, &r->u.fill.pixel))
+		if(fill_reduces_to_source (composite->op, color, dst, &r->u.fill.pixel))
 		{
 			/* Use plain C for the fill operations as the span length is
 			* typically small, too small to payback the startup overheads of
@@ -3169,7 +3173,7 @@ static eGRAPHICS_INTEGER_STATUS inplace_renderer_init(
 			TO_IMAGE_SURFACE(composite->source_pattern.surface.surface);
 		int tx, ty;
 
-		if (GraphicsMatrixIsIntegerTranslation(&composite->source_pattern.base.matrix,
+		if(GraphicsMatrixIsIntegerTranslation(&composite->source_pattern.base.matrix,
 			&tx, &ty) &&
 			composite->bounded.x + tx >= 0 &&
 			composite->bounded.y + ty >= 0 &&
@@ -3190,7 +3194,9 @@ static eGRAPHICS_INTEGER_STATUS inplace_renderer_init(
 		unsigned int width;
 
 		if (composite->is_bounded == 0)
+		{
 			return GRAPHICS_INTEGER_STATUS_UNSUPPORTED;
+		}
 
 		r->base.render_rows = r->bpp == 0xff ? _inplace_spans : _inplace_opacity_spans;
 		width = (composite->bounded.width + 3) & ~3;
@@ -3198,7 +3204,10 @@ static eGRAPHICS_INTEGER_STATUS inplace_renderer_init(
 		r->u.composite.run_length = 8;
 		if (src->type == GRAPHICS_PATTERN_TYPE_LINEAR ||
 			src->type == GRAPHICS_PATTERN_TYPE_RADIAL)
+		{
 			r->u.composite.run_length = 256;
+		}
+
 		if (dst->base.is_clear &&
 			(composite->op == GRAPHICS_OPERATOR_SOURCE ||
 				composite->op == GRAPHICS_OPERATOR_OVER ||
@@ -3226,15 +3235,17 @@ static eGRAPHICS_INTEGER_STATUS inplace_renderer_init(
 			&composite->bounded,
 			&composite->source_sample_area,
 			&r->u.composite.src_x, &r->u.composite.src_y);
-		if (UNLIKELY (r->src == NULL))
+		if(UNLIKELY (r->src == NULL))
+		{
 			return GRAPHICS_STATUS_NO_MEMORY;
+		}
 
 		/* Create an effectively unbounded mask by repeating the single line */
 		buf = r->_buf;
 		if(width > SZ_BUF)
 		{
 			buf = MEM_ALLOC_FUNC(width);
-			if (UNLIKELY (buf == NULL))
+			if(UNLIKELY (buf == NULL))
 			{
 				PixelManipulateImageUnreference(r->src);
 				return GRAPHICS_STATUS_NO_MEMORY;
@@ -3251,8 +3262,10 @@ static eGRAPHICS_INTEGER_STATUS inplace_renderer_init(
 			return GRAPHICS_STATUS_NO_MEMORY;
 		}
 		
-		if (buf != r->_buf)
+		if(buf != r->_buf)
+		{
 			PixelManipulateImageSetDestroyFunction(r->mask, free_pixels, buf);
+		}
 
 		r->u.composite.dst = &dst->image;
 	}
@@ -3279,8 +3292,10 @@ static eGRAPHICS_INTEGER_STATUS span_renderer_init(
 
 	graphics = source->graphics;
 
-	if (needs_clip)
+	if(needs_clip)
+	{
 		return GRAPHICS_INTEGER_STATUS_UNSUPPORTED;
+	}
 
 	r->composite = composite;
 	r->mask = NULL;

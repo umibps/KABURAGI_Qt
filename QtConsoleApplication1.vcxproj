@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="adjustment_layer.h" />
+    <ClInclude Include="anti_alias.h" />
+    <ClInclude Include="application.h" />
+    <ClInclude Include="application_private.h" />
+    <ClInclude Include="bezier.h" />
+    <ClInclude Include="brushes.h" />
+    <ClInclude Include="brushes\brushes.h" />
+    <ClInclude Include="brush_core.h" />
+    <ClInclude Include="color.h" />
+    <ClInclude Include="common_tools.h" />
+    <ClInclude Include="configure.h" />
+    <ClInclude Include="display.h" />
+    <ClInclude Include="display_filter.h" />
+    <ClInclude Include="draw_window.h" />
+    <ClInclude Include="fractal_label.h" />
+    <ClInclude Include="ght_hash_table.h" />
+    <ClInclude Include="graphics\configure.h" />
+    <ClInclude Include="graphics\graphics.h" />
+    <ClInclude Include="graphics\graphics_clip.h" />
+    <ClInclude Include="graphics\graphics_clip_tor_scan_converter.h" />
+    <ClInclude Include="graphics\graphics_compositor.h" />
+    <ClInclude Include="graphics\graphics_context.h" />
+    <ClInclude Include="graphics\graphics_damage.h" />
+    <ClInclude Include="graphics\graphics_definitions.h" />
+    <ClInclude Include="graphics\graphics_device.h" />
+    <ClInclude Include="graphics\graphics_flags.h" />
+    <ClInclude Include="graphics\graphics_function.h" />
+    <ClInclude Include="graphics\graphics_inline.h" />
+    <ClInclude Include="graphics\graphics_list.h" />
+    <ClInclude Include="graphics\graphics_matrix.h" />
+    <ClInclude Include="graphics\graphics_memory_pool.h" />
+    <ClInclude Include="graphics\graphics_path.h" />
+    <ClInclude Include="graphics\graphics_pattern.h" />
+    <ClInclude Include="graphics\graphics_pen.h" />
+    <ClInclude Include="graphics\graphics_private.h" />
+    <ClInclude Include="graphics\graphics_region.h" />
+    <ClInclude Include="graphics\graphics_scan_converter_private.h" />
+    <ClInclude Include="graphics\graphics_state.h" />
+    <ClInclude Include="graphics\graphics_status.h" />
+    <ClInclude Include="graphics\graphics_surface.h" />
+    <ClInclude Include="graphics\graphics_types.h" />
+    <ClInclude Include="graphics\memory.h" />
+    <ClInclude Include="graphics\types.h" />
+    <ClInclude Include="gui\brushes_gui.h" />
+    <ClInclude Include="gui\common_tools_gui.h" />
+    <ClInclude Include="gui\dialog.h" />
+    <ClInclude Include="gui\draw_window.h" />
+    <ClInclude Include="gui\gui.h" />
+    <ClInclude Include="gui\gui_enum.h" />
+    <ClInclude Include="gui\layer.h" />
+    <ClInclude Include="gui\Qt\brushes\brushes_qt.h" />
+    <QtMoc Include="gui\Qt\navigation_qt.h" />
+    <QtMoc Include="gui\Qt\common_tool_button_qt.h" />
+    <ClInclude Include="image_file\image_file.h" />
+    <ClInclude Include="image_file\original_format.h" />
+    <ClInclude Include="image_file\png_file.h" />
+    <ClInclude Include="lcms\lcms2.h" />
+    <ClInclude Include="lcms\lcms2_internal.h" />
+    <ClInclude Include="lcms\lcms2_plugin.h" />
+    <ClInclude Include="lua\lapi.h" />
+    <ClInclude Include="lua\lauxlib.h" />
+    <ClInclude Include="lua\lcode.h" />
+    <ClInclude Include="lua\lctype.h" />
+    <ClInclude Include="lua\ldebug.h" />
+    <ClInclude Include="lua\ldo.h" />
+    <ClInclude Include="lua\lfunc.h" />
+    <ClInclude Include="lua\lgc.h" />
+    <ClInclude Include="lua\llex.h" />
+    <ClInclude Include="lua\llimits.h" />
+    <ClInclude Include="lua\lmem.h" />
+    <ClInclude Include="lua\lobject.h" />
+    <ClInclude Include="lua\lopcodes.h" />
+    <ClInclude Include="lua\lparser.h" />
+    <ClInclude Include="lua\lstate.h" />
+    <ClInclude Include="lua\lstring.h" />
+    <ClInclude Include="lua\ltable.h" />
+    <ClInclude Include="lua\ltm.h" />
+    <ClInclude Include="lua\lua.h" />
+    <ClInclude Include="lua\luaconf.h" />
+    <ClInclude Include="lua\lualib.h" />
+    <ClInclude Include="lua\lundump.h" />
+    <ClInclude Include="lua\lvm.h" />
+    <ClInclude Include="lua\lzio.h" />
+    <ClInclude Include="pixel_manipulate\configure.h" />
+    <ClInclude Include="pixel_manipulate\memory.h" />
+    <ClInclude Include="pixel_manipulate\pixel_manipulate.h" />
+    <ClInclude Include="pixel_manipulate\pixel_manipulate_composite.h" />
+    <ClInclude Include="pixel_manipulate\pixel_manipulate_edge_implement.h" />
+    <ClInclude Include="pixel_manipulate\pixel_manipulate_format.h" />
+    <ClInclude Include="pixel_manipulate\pixel_manipulate_gradient.h" />
+    <ClInclude Include="pixel_manipulate\pixel_manipulate_inline.h" />
+    <ClInclude Include="pixel_manipulate\pixel_manipulate_matrix.h" />
+    <ClInclude Include="pixel_manipulate\pixel_manipulate_operator.h" />
+    <ClInclude Include="pixel_manipulate\pixel_manipulate_private.h" />
+    <ClInclude Include="pixel_manipulate\pixel_manipulate_region.h" />
+    <ClInclude Include="pixel_manipulate\types.h" />
+    <ClInclude Include="gui\Qt\common_tools\common_tools_qt.h" />
+    <QtMoc Include="gui\Qt\brushes\brushes_widgets_qt.h" />
+    <ClInclude Include="gui\Qt\brush_button_qt.h" />
+    <ClInclude Include="gui\Qt\qt_widgets.h" />
+    <QtMoc Include="gui\Qt\tool_box_qt.h" />
+    <QtMoc Include="gui\Qt\spin_scale_qt.h" />
+    <QtMoc Include="gui\Qt\mainwindow.h" />
+    <QtMoc Include="gui\Qt\layer_qt.h" />
+    <QtMoc Include="gui\Qt\draw_window_qt.h" />
+    <QtMoc Include="gui\Qt\dialogs_qt.h" />
+    <QtMoc Include="gui\Qt\color_chooser_qt.h" />
+    <ClInclude Include="gui\tool_box.h" />
+    <ClInclude Include="history.h" />
+    <ClInclude Include="ini_file.h" />
+    <ClInclude Include="labels.h" />
+    <ClInclude Include="layer.h" />
+    <ClInclude Include="layer_set.h" />
+    <ClInclude Include="layer_view.h" />
+    <ClInclude Include="layer_window.h" />
+    <ClInclude Include="memory.h" />
+    <ClInclude Include="memory_stream.h" />
+    <ClInclude Include="perspective_ruler.h" />
+    <ClInclude Include="selection_area.h" />
+    <ClInclude Include="smoother.h" />
+    <ClInclude Include="srgb_profile.h" />
+    <ClInclude Include="texture.h" />
+    <ClInclude Include="text_layer.h" />
+    <ClInclude Include="text_render.h" />
+    <ClInclude Include="tool_box.h" />
+    <ClInclude Include="transform.h" />
+    <ClInclude Include="types.h" />
+    <ClInclude Include="utils.h" />
+    <ClInclude Include="vector.h" />
+    <ClInclude Include="vector_brushes.h" />
+    <ClInclude Include="vector_brush_core.h" />
+    <ClInclude Include="vector_layer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="anti_alias.c" />
+    <ClCompile Include="application.c" />
+    <ClCompile Include="bezier.c" />
+    <ClCompile Include="brushes\blend_brush.c" />
+    <ClCompile Include="brushes\brushes.c" />
+    <ClCompile Include="brushes\eraser.c" />
+    <ClCompile Include="brushes\pencil.c" />
+    <ClCompile Include="brush_core.c" />
+    <ClCompile Include="color.c" />
+    <ClCompile Include="common_tools\color_picker.c" />
+    <ClCompile Include="common_tools\common_tools.c" />
+    <ClCompile Include="common_tool_core.c" />
+    <ClCompile Include="display.c" />
+    <ClCompile Include="draw_window.c" />
+    <ClCompile Include="graphics\graphics.c" />
+    <ClCompile Include="graphics\graphics_bentley_ottomann.c" />
+    <ClCompile Include="graphics\graphics_clip.c" />
+    <ClCompile Include="graphics\graphics_clip_tor_scan_converter.c" />
+    <ClCompile Include="graphics\graphics_compositor.c" />
+    <ClCompile Include="graphics\graphics_context.c" />
+    <ClCompile Include="graphics\graphics_damage.c" />
+    <ClCompile Include="graphics\graphics_image_compositor.c" />
+    <ClCompile Include="graphics\graphics_image_source.c" />
+    <ClCompile Include="graphics\graphics_mask_compositor.c" />
+    <ClCompile Include="graphics\graphics_matrix.c" />
+    <ClCompile Include="graphics\graphics_memory_pool.c" />
+    <ClCompile Include="graphics\graphics_mesh_pattern_rasterizer.c" />
+    <ClCompile Include="graphics\graphics_misc.c" />
+    <ClCompile Include="graphics\graphics_mono_scan_converter.c" />
+    <ClCompile Include="graphics\graphics_path.c" />
+    <ClCompile Include="graphics\graphics_path_stroke_tristrip.c" />
+    <ClCompile Include="graphics\graphics_pattern.c" />
+    <ClCompile Include="graphics\graphics_pen.c" />
+    <ClCompile Include="graphics\graphics_polygon.c" />
+    <ClCompile Include="graphics\graphics_polygon_intersect.c" />
+    <ClCompile Include="graphics\graphics_polygon_reduce.c" />
+    <ClCompile Include="graphics\graphics_rectangle.c" />
+    <ClCompile Include="graphics\graphics_rectangular_scan_converter.c" />
+    <ClCompile Include="graphics\graphics_region.c" />
+    <ClCompile Include="graphics\graphics_spans_compositor.c" />
+    <ClCompile Include="graphics\graphics_state.c" />
+    <ClCompile Include="graphics\graphics_stroke.c" />
+    <ClCompile Include="graphics\graphics_surface.c" />
+    <ClCompile Include="graphics\graphics_tor22_scan_converter.c" />
+    <ClCompile Include="graphics\graphics_tor_scan_converter.c" />
+    <ClCompile Include="graphics\graphics_traps_compositor.c" />
+    <ClCompile Include="graphics\graphics_tristrip.c" />
+    <ClCompile Include="graphics\graphics_types.c" />
+    <ClCompile Include="gui\Qt\brushes\blend_brush_qt.cpp" />
+    <ClCompile Include="gui\Qt\brushes\brushes_qt.cpp" />
+    <ClCompile Include="gui\Qt\brushes\brushes_widgets_qt.cpp" />
+    <ClCompile Include="gui\Qt\brushes\eraser_qt.cpp" />
+    <ClCompile Include="gui\Qt\brushes\pencil_qt.cpp" />
+    <ClCompile Include="gui\Qt\brush_button_qt.cpp" />
+    <ClCompile Include="gui\Qt\color_chooser_qt.cpp" />
+    <ClCompile Include="gui\Qt\common_tools\color_picker_qt.cpp" />
+    <ClCompile Include="gui\Qt\common_tools\common_tools_qt.cpp" />
+    <ClCompile Include="gui\Qt\common_tool_button_qt.cpp" />
+    <ClCompile Include="gui\Qt\dialogs_qt.cpp" />
+    <ClCompile Include="gui\Qt\display_qt.cpp" />
+    <ClCompile Include="gui\Qt\draw_window_qt.cpp" />
+    <ClCompile Include="gui\Qt\initialize_qt.cpp" />
+    <ClCompile Include="gui\Qt\input_qt.cpp" />
+    <ClCompile Include="gui\Qt\labels_qt.cpp" />
+    <ClCompile Include="gui\Qt\layer_qt.cpp" />
+    <ClCompile Include="gui\Qt\mainwindow.cpp" />
+    <ClCompile Include="gui\Qt\navigation_qt.cpp" />
+    <ClCompile Include="gui\Qt\qt_widgets.cpp" />
+    <ClCompile Include="gui\Qt\spin_scale_qt.cpp" />
+    <ClCompile Include="gui\Qt\tool_box_qt.cpp" />
+    <ClCompile Include="hash_functions.c" />
+    <ClCompile Include="hash_table.c" />
+    <ClCompile Include="history.c" />
+    <ClCompile Include="image_file\image_file.c" />
+    <ClCompile Include="image_file\original_format.c" />
+    <ClCompile Include="image_file\png_file.c" />
+    <ClCompile Include="ini_file.c" />
+    <ClCompile Include="input.c" />
+    <ClCompile Include="layer.c" />
+    <ClCompile Include="layer_blend.c" />
+    <ClCompile Include="layer_set.c" />
+    <ClCompile Include="layer_view.c" />
+    <ClCompile Include="lcms\cmscam02.c" />
+    <ClCompile Include="lcms\cmscgats.c" />
+    <ClCompile Include="lcms\cmscnvrt.c" />
+    <ClCompile Include="lcms\cmserr.c" />
+    <ClCompile Include="lcms\cmsgamma.c" />
+    <ClCompile Include="lcms\cmsgmt.c" />
+    <ClCompile Include="lcms\cmshalf.c" />
+    <ClCompile Include="lcms\cmsintrp.c" />
+    <ClCompile Include="lcms\cmsio0.c" />
+    <ClCompile Include="lcms\cmsio1.c" />
+    <ClCompile Include="lcms\cmslut.c" />
+    <ClCompile Include="lcms\cmsmd5.c" />
+    <ClCompile Include="lcms\cmsmtrx.c" />
+    <ClCompile Include="lcms\cmsnamed.c" />
+    <ClCompile Include="lcms\cmsopt.c" />
+    <ClCompile Include="lcms\cmspack.c" />
+    <ClCompile Include="lcms\cmspcs.c" />
+    <ClCompile Include="lcms\cmsplugin.c" />
+    <ClCompile Include="lcms\cmsps2.c" />
+    <ClCompile Include="lcms\cmssamp.c" />
+    <ClCompile Include="lcms\cmssm.c" />
+    <ClCompile Include="lcms\cmstypes.c" />
+    <ClCompile Include="lcms\cmsvirt.c" />
+    <ClCompile Include="lcms\cmswtpnt.c" />
+    <ClCompile Include="lcms\cmsxform.c" />
+    <ClCompile Include="lua\lapi.c" />
+    <ClCompile Include="lua\lauxlib.c" />
+    <ClCompile Include="lua\lbaselib.c" />
+    <ClCompile Include="lua\lbitlib.c" />
+    <ClCompile Include="lua\lcode.c" />
+    <ClCompile Include="lua\lcorolib.c" />
+    <ClCompile Include="lua\lctype.c" />
+    <ClCompile Include="lua\ldblib.c" />
+    <ClCompile Include="lua\ldebug.c" />
+    <ClCompile Include="lua\ldo.c" />
+    <ClCompile Include="lua\ldump.c" />
+    <ClCompile Include="lua\lfunc.c" />
+    <ClCompile Include="lua\lgc.c" />
+    <ClCompile Include="lua\linit.c" />
+    <ClCompile Include="lua\liolib.c" />
+    <ClCompile Include="lua\llex.c" />
+    <ClCompile Include="lua\lmathlib.c" />
+    <ClCompile Include="lua\lmem.c" />
+    <ClCompile Include="lua\loadlib.c" />
+    <ClCompile Include="lua\lobject.c" />
+    <ClCompile Include="lua\lopcodes.c" />
+    <ClCompile Include="lua\loslib.c" />
+    <ClCompile Include="lua\lparser.c" />
+    <ClCompile Include="lua\lstate.c" />
+    <ClCompile Include="lua\lstring.c" />
+    <ClCompile Include="lua\lstrlib.c" />
+    <ClCompile Include="lua\ltable.c" />
+    <ClCompile Include="lua\ltablib.c" />
+    <ClCompile Include="lua\ltm.c" />
+    <ClCompile Include="lua\lua.c" />
+    <ClCompile Include="lua\luac.c" />
+    <ClCompile Include="lua\lundump.c" />
+    <ClCompile Include="lua\lvm.c" />
+    <ClCompile Include="lua\lzio.c" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="memory_stream.c" />
+    <ClCompile Include="menu.c" />
+    <ClCompile Include="navigation.c" />
+    <ClCompile Include="not_implemented.c" />
+    <ClCompile Include="perspective_ruler.c" />
+    <ClCompile Include="pixel_manipulate\pixel_manipulate.c" />
+    <ClCompile Include="pixel_manipulate\pixel_manipulate_access.c" />
+    <ClCompile Include="pixel_manipulate\pixel_manipulate_combine.c" />
+    <ClCompile Include="pixel_manipulate\pixel_manipulate_combine_float.c" />
+    <ClCompile Include="pixel_manipulate\pixel_manipulate_composite.c" />
+    <ClCompile Include="pixel_manipulate\pixel_manipulate_edge.c" />
+    <ClCompile Include="pixel_manipulate\pixel_manipulate_general.c" />
+    <ClCompile Include="pixel_manipulate\pixel_manipulate_gradient.c" />
+    <ClCompile Include="pixel_manipulate\pixel_manipulate_image.c" />
+    <ClCompile Include="pixel_manipulate\pixel_manipulate_implementation.c" />
+    <ClCompile Include="pixel_manipulate\pixel_manipulate_linear_gradient.c" />
+    <ClCompile Include="pixel_manipulate\pixel_manipulate_matrix.c" />
+    <ClCompile Include="pixel_manipulate\pixel_manipulate_mmx.c" />
+    <ClCompile Include="pixel_manipulate\pixel_manipulate_no_operator.c" />
+    <ClCompile Include="pixel_manipulate\pixel_manipulate_region.c" />
+    <ClCompile Include="pixel_manipulate\pixel_manipulate_solid_fill.c" />
+    <ClCompile Include="pixel_manipulate\pixel_manipulate_sse2.c" />
+    <ClCompile Include="pixel_manipulate\pixel_manipulate_ssse3.c" />
+    <ClCompile Include="pixel_manipulate\pixel_manipulate_trap.c" />
+    <ClCompile Include="pixel_manipulate\pixel_manipulate_utils.c" />
+    <ClCompile Include="pixel_manipulate\pixel_manipulate_x86_64.c" />
+    <ClCompile Include="save.c" />
+    <ClCompile Include="selection_area.c" />
+    <ClCompile Include="smoother.c" />
+    <ClCompile Include="text_layer.c" />
+    <ClCompile Include="text_render.c" />
+    <ClCompile Include="transform.c" />
+    <ClCompile Include="utils.c" />
+    <ClCompile Include="vector.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="application_resource.txt" />
+    <Text Include="brush_resource.txt" />
+    <Text Include="common_tool_resource.txt" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{575D269B-8220-41EA-AAA9-9BF92EE82EF7}</ProjectGuid>
+    <Keyword>QtVS_v304</Keyword>
+    <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">10.0</WindowsTargetPlatformVersion>
+    <QtMsBuild Condition="'$(QtMsBuild)'=='' OR !Exists('$(QtMsBuild)\qt.targets')">$(MSBuildProjectDirectory)\QtMsBuild</QtMsBuild>
+    <ProjectName>KABURAGI_QT_03_VS</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Condition="Exists('$(QtMsBuild)\qt_defaults.props')">
+    <Import Project="$(QtMsBuild)\qt_defaults.props" />
+  </ImportGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="QtSettings">
+    <QtInstall>6.10.0_msvc2022_64</QtInstall>
+    <QtModules>core</QtModules>
+    <QtBuildConfig>debug</QtBuildConfig>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
+    <QtInstall>6.10.0_msvc2022_64</QtInstall>
+    <QtModules>core</QtModules>
+    <QtBuildConfig>release</QtBuildConfig>
+  </PropertyGroup>
+  <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') or !Exists('$(QtMsBuild)\qt.props')">
+    <Message Importance="High" Text="QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly." />
+  </Target>
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="Shared" />
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(QtMsBuild)\Qt.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(QtMsBuild)\Qt.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>./Include; ./Include/freetype; ./Include/harfbuzz; ./Include/libpng; ./Include/zlib; ./Include/Qt/QtCore; ./Include/Qt/QtGui; ./Include/Qt/QtWidgets;</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>./lib; ./lib/Qt;</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>./Include; ./Include/freetype; ./Include/harfbuzz; ./Include/libpng; ./Include/zlib; ./Include/Qt/QtCore; ./Include/Qt/QtGui; ./Include/Qt/QtWidgets;</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>./lib; ./lib/Qt;</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
+    <ClCompile>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>false</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="Configuration">
+    <ClCompile>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>false</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
+    <Import Project="$(QtMsBuild)\qt.targets" />
+  </ImportGroup>
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

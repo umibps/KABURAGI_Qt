@@ -212,7 +212,11 @@ struct _DRAW_WINDOW
 extern "C" {
 #endif
 
-DRAW_WINDOW_WIDGETS_PTR CreateDrawWindowWidgets(void* app, DRAW_WINDOW* canvas);
+extern DRAW_WINDOW_WIDGETS_PTR CreateDrawWindowWidgets(void* app, DRAW_WINDOW* canvas);
+
+extern void ReleaseDrawWindowWidget(struct _DRAW_WINDOW_WIDGETS* widgets);
+
+extern void ResizeDrawWindowWidgets(DRAW_WINDOW* canvas);
 
 EXTERN LAYER* CreateLayer(
 	int32 x,
@@ -298,24 +302,35 @@ EXTERN void ClearMotionQueue(DRAW_WINDOW* canvas);
 
 EXTERN void DisplayEditSelection(DRAW_WINDOW* window);
 
-/***************************************
-* ResizeDispTemp関数				   *
-* 表示用の一時保存のバッファを変更	 *
-* 引数								 *
-* window		: 描画領域の情報	   *
-* new_width		: 描画領域の新しい幅   *
-* new_height	: 描画領域の新しい高さ *
-***************************************/
-EXTERN void ResizeDispTemp(
-	DRAW_WINDOW* window,
+/*
+* DrawWindowChangeZoom関数
+* キャンバスの表示拡大縮小率を変更する
+* 引数
+* canvas	: 拡大縮小率を変更するキャンバス
+* zoom		: 変更後の拡大縮小率
+*/
+EXTERN void DrawWindowChangeZoom(DRAW_WINDOW* canvas, int16 zoom);
+
+/*
+* DrawWindowChangeRotate関数
+* キャンバスの表示回転角を変更する
+* 引数
+* canvas	: 回転角を変更するキャンバス
+* angle		: 新しい表示回転角(°)
+*/
+EXTERN void DrawWindowChangeRotate(DRAW_WINDOW* canvas, int angle);
+
+/*
+* ResizeCanvasDispTempLayer関数
+* 表示用の一時保存レイヤーの幅、高さを変更
+* canvas		: サイズを変更するキャンバス
+* new_width		: キャンバスの新しい幅
+* new_height	: キャンバスの新しい高さ
+*/
+EXTERN void ResizeCanvasDispTempLayer(
+	DRAW_WINDOW* canvas,
 	int32 new_width,
 	int32 new_height
-);
-
-EXTERN void RasterizeVectorLayer(
-	struct _DRAW_WINDOW* window,
-	struct _LAYER* target,
-	VECTOR_LAYER* layer
 );
 
 EXTERN void RenderTextLayer(DRAW_WINDOW* window, LAYER* target, TEXT_LAYER* layer);
